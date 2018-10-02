@@ -1,1 +1,1 @@
-Open up /src/html/index.html for Doxygen documentation describing code functionality.
+Open up /src/html/index.html for Doxygen documentation describing code functionality.  If you want to view it without cloning the repo, navigate to http://htmlpreview.github.io/?http://github.com/nikolaimatni/SelfDrivingCar/blob/master/src/html/index.html
