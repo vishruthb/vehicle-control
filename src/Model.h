@@ -40,8 +40,8 @@ protected:
   virtual ADVec DynamicsF(int t, const ADVec &xt, const ADVec &ut) = 0;
 
   /// Helper function to extract x(t) from vars
-  ADVec x_t(int t, const ADVec &vars) {
-    ADVec xt(nx_);
+  template <typename Vector> Vector x_t(int t, const Vector &vars) {
+    Vector xt(nx_);
     for (int i = 0; i < nx_; ++i)
       xt[i] = vars[starts_[i] + t];
 
@@ -49,8 +49,8 @@ protected:
   }
 
   /// Helper function to extract u(t) from vars
-  ADVec u_t(int t, const ADVec &vars) {
-    ADVec ut(nu_);
+  template <typename Vector> Vector u_t(int t, const Vector &vars) {
+    Vector ut(nu_);
     for (int i = 0; i < nu_; ++i)
       ut[i] = vars[starts_[nx_ + i] + t];
 
@@ -130,7 +130,7 @@ public:
  * function parameters were taken from someone's solution online just to debug
  * things, will tune them more substantially later*/
 class BikeModel : public Model {
-private:
+protected:
   double dt_;       ///>sampling time dt
   double vref_;     ///>reference velocity
   VectorXd coeffs_; ///>coefficients

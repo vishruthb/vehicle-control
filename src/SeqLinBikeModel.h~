@@ -1,0 +1,60 @@
+#ifndef SEQ_LIN_BIKE_MODEL_H
+#define SEQ_LIN_BIKE_MODEL_H
+
+#include Model.h
+
+class SeqLinBikeModel : public BikeModel {
+private:
+  ADvec trajectory_;
+
+  // for now just use nonlinear BikeModel's cost
+  virtual AD<double> Cost(int t, const ADVec &xt, const ADVec &ut,
+                          const ADVec &utp1) override {
+    return BikeModel::Cost(t, xt, ut, utp1);
+  }
+
+  // ditto
+  virtual AD<double> TerminalCost(const ADVec &xN) override {
+    return BikeModel::TerminalCost(xN);
+  }
+
+  // here's where the magic happens
+  virtual ADVec DynamicsF(int t, const ADVec &xt, const ADVec &ut) override {
+    AD<double> x = xt[X];
+    AD<double> y = xt[Y];
+    AD<double> psi = xt[PSI];
+    AD<double> v = xt[V];
+    AD<double> cte = xt[CTE];
+    AD<double> epsi = xt[EPSI];
+    AD<double> a = ut[A];
+    AD<double> delta = ut[DELTA];
+
+    AD<double> f = coeffs_[0] + coeffs_[1] * x + coeffs_[2] * CppAD::pow(x, 2) +
+                   coeffs_[3] * CppAD::pow(x, 3);
+
+    AD<double> psides = CppAD::atan(coeffs_[1] + 2 * coeffs_[2] * x +
+                                    3 * coeffs_[3] * CppAD::pow(x, 2));
+
+    ADVec fxtut(nx());
+    fxtut[X] = x + v * CppAD::cos(psi) * dt_;
+    fxtut[Y] = y + v * CppAD::sin(psi) * dt_;
+    fxtut[PSI] = psi - v / Lf_ * delta * dt_;
+    fxtut[V] = v + a * dt_;
+    fxtut[CTE] = (f - y) + v * CppAD::sin(epsi) * dt_;
+    fxtut[EPSI] = (psi - psides) - v / Lf_ * delta * dt_;
+
+    return fxtut;
+  }
+
+public:
+  SeqLinBikeModel(int N, int nx, int nu, int delay, double dt, double vref,
+                  const VectorXd &coeffs = {}, const ADvec &trajectory = {})
+      : BikeModel(N, nx, nu, delay, dt, vref, coeffs), trajectory_(trajectory) {
+  }
+
+  void set_trajectory(const ADvec &trajectory) { trajectory__ = trajecotry; }
+
+  virtual ~SeqLinBikeModel() {}
+}
+
+#endif

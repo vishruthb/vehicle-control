@@ -2,6 +2,7 @@
 #include "Eigen-3.3/Eigen/QR"
 #include "MPC.h"
 #include "Model.h"
+#include "SeqLinBikeModel.h"
 #include "json.hpp"
 #include <chrono>
 #include <iostream>
@@ -98,7 +99,9 @@ int main() {
   bounds.u_low_ = vector<double>{-1 * deg2rad(25), -1};
 
   // MPC is initialized here!
-  BikeModel bike_model(10, 6, 2, 1, 0.1, 70);
+  // TODO: Make a SeqLinMPC class that deals with the trajectory updates for
+  // sequential linearization
+  SeqLinBikeModel bike_model(10, 6, 2, 1, 0.1, 70);
   Model &model = bike_model;
 
   MPC mpc(10, model, 10 * 6 + 9 * 2, 10 * 6, bounds);
