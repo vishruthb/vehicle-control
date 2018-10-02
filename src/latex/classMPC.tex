@@ -1,0 +1,120 @@
+\hypertarget{classMPC}{}\section{M\+PC Class Reference}
+\label{classMPC}\index{M\+PC@{M\+PC}}
+
+
+Base \mbox{\hyperlink{classMPC}{M\+PC}} class. Whereas the model that you pass in takes care of specifying the dynamics and the cost function, the \mbox{\hyperlink{classMPC}{M\+PC}} object sets up the bounds on variables (as specified in \mbox{\hyperlink{structBounds}{Bounds}} object), and on constraints (enforces x(0) = x0, x(t+1) -\/ f(x(t),u(t)) = 0), and also warmstarts your solver with a suitably shifted version of the last run\textquotesingle{}s solution.  
+
+
+
+
+{\ttfamily \#include $<$M\+P\+C.\+h$>$}
+
+Inheritance diagram for M\+PC\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classMPC}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classMPC_a2eb1e1066f5f8fa21b749c8fd7f65214}\label{classMPC_a2eb1e1066f5f8fa21b749c8fd7f65214}} 
+{\bfseries M\+PC} (size\+\_\+t N, \mbox{\hyperlink{classModel}{Model}} \&model, size\+\_\+t nvars, size\+\_\+t nconstraints, \mbox{\hyperlink{structBounds}{Bounds}} bounds)
+\item 
+\mbox{\Hypertarget{classMPC_a72dfd8e42f90e52188826e28b4a9ef12}\label{classMPC_a72dfd8e42f90e52188826e28b4a9ef12}} 
+size\+\_\+t \mbox{\hyperlink{classMPC_a72dfd8e42f90e52188826e28b4a9ef12}{get\+\_\+horizon}} ()
+\begin{DoxyCompactList}\small\item\em return optimization horizon \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classMPC_aa12974d3c66958fb98d9fc5a6a5248de}\label{classMPC_aa12974d3c66958fb98d9fc5a6a5248de}} 
+void \mbox{\hyperlink{classMPC_aa12974d3c66958fb98d9fc5a6a5248de}{set\+\_\+horizon}} (int n)
+\begin{DoxyCompactList}\small\item\em set optimization horizon to N\+\_\+ = n (actual horizon is n-\/1) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classMPC_a9ed8c79c43f0b26ba9ac8ed70bb50b73}\label{classMPC_a9ed8c79c43f0b26ba9ac8ed70bb50b73}} 
+void \mbox{\hyperlink{classMPC_a9ed8c79c43f0b26ba9ac8ed70bb50b73}{set\+\_\+model}} (\mbox{\hyperlink{classModel}{Model}} \&new\+\_\+model)
+\begin{DoxyCompactList}\small\item\em update model -- this also updates our start variable and clears warmstart\+\_\+ \end{DoxyCompactList}\item 
+virtual vector$<$ double $>$ \mbox{\hyperlink{classMPC_ae07d02edbf31f94d738cfa206e5b2d77}{Solve}} (const Vector\+Xd \&state, const Vector\+Xd \&ref)
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classMPC_aebb4b7be7b8b571e5c542c623cfa1aba}\label{classMPC_aebb4b7be7b8b571e5c542c623cfa1aba}} 
+virtual void \mbox{\hyperlink{classMPC_aebb4b7be7b8b571e5c542c623cfa1aba}{Setup\+Warm\+Start}} (Dvector \&vars, const Vector\+Xd \&state)
+\begin{DoxyCompactList}\small\item\em \begin{quote}
+remember last run\textquotesingle{}s solution for warm starting\end{quote}
+\end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classMPC_a85151503d5e29e3832eabfc22dadbc7f}\label{classMPC_a85151503d5e29e3832eabfc22dadbc7f}} 
+virtual void {\bfseries Setup\+Var\+Bounds} (Dvector \&vars\+\_\+lowerbound, Dvector \&vars\+\_\+upperbound)
+\item 
+\mbox{\Hypertarget{classMPC_a0c45ccce078c88436c7db83892efde7c}\label{classMPC_a0c45ccce078c88436c7db83892efde7c}} 
+virtual void {\bfseries Setup\+Constraint\+Bounds} (Dvector \&constraints\+\_\+lowerbound, Dvector \&constraints\+\_\+upperbound, const Vector\+Xd \&state)
+\item 
+\mbox{\Hypertarget{classMPC_a034f942cd45fedc786932dcf328ec790}\label{classMPC_a034f942cd45fedc786932dcf328ec790}} 
+virtual void {\bfseries Process\+Solution} (vector$<$ double $>$ \&result, Dvector sol, int shift=0)
+\item 
+\mbox{\Hypertarget{classMPC_ad15f9e5ae586e33af171a3b09363e432}\label{classMPC_ad15f9e5ae586e33af171a3b09363e432}} 
+virtual void {\bfseries Setup\+Options} (string \&options)
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classMPC_a2b810b20d87323cce8285d14230c917c}\label{classMPC_a2b810b20d87323cce8285d14230c917c}} 
+size\+\_\+t \mbox{\hyperlink{classMPC_a2b810b20d87323cce8285d14230c917c}{N\+\_\+}}
+\begin{DoxyCompactList}\small\item\em horizon is N\+\_\+ -\/1 \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classModel}{Model}} \& \mbox{\hyperlink{classMPC_abbf9a3b26a6cbc6cad87cac1c8f2aaaf}{model\+\_\+}}
+\item 
+\mbox{\Hypertarget{classMPC_a9a9db53c26d46e7579d02a5d08c0358c}\label{classMPC_a9a9db53c26d46e7579d02a5d08c0358c}} 
+size\+\_\+t {\bfseries nvars\+\_\+}
+\item 
+\mbox{\Hypertarget{classMPC_ac89334cea51103f0a4a20268b7d748ef}\label{classMPC_ac89334cea51103f0a4a20268b7d748ef}} 
+size\+\_\+t \mbox{\hyperlink{classMPC_ac89334cea51103f0a4a20268b7d748ef}{nconstraints\+\_\+}}
+\begin{DoxyCompactList}\small\item\em \begin{quote}
+number of optimizaiton variables\end{quote}
+\end{DoxyCompactList}\item 
+\mbox{\hyperlink{structBounds}{Bounds}} \mbox{\hyperlink{classMPC_a821e5a57b25e8c83aaae02d44dab3ea8}{bounds\+\_\+}}
+\item 
+\mbox{\Hypertarget{classMPC_af52144a70629c4809d28790fd7c0fdf3}\label{classMPC_af52144a70629c4809d28790fd7c0fdf3}} 
+vector$<$ int $>$ {\bfseries starts\+\_\+}
+\item 
+Cpp\+A\+D\+::vector$<$ double $>$ \mbox{\hyperlink{classMPC_a303dcbda2e7d051f5f8a34e01bc414bc}{warmstart\+\_\+}}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Base \mbox{\hyperlink{classMPC}{M\+PC}} class. Whereas the model that you pass in takes care of specifying the dynamics and the cost function, the \mbox{\hyperlink{classMPC}{M\+PC}} object sets up the bounds on variables (as specified in \mbox{\hyperlink{structBounds}{Bounds}} object), and on constraints (enforces x(0) = x0, x(t+1) -\/ f(x(t),u(t)) = 0), and also warmstarts your solver with a suitably shifted version of the last run\textquotesingle{}s solution. 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classMPC_ae07d02edbf31f94d738cfa206e5b2d77}\label{classMPC_ae07d02edbf31f94d738cfa206e5b2d77}} 
+\index{M\+PC@{M\+PC}!Solve@{Solve}}
+\index{Solve@{Solve}!M\+PC@{M\+PC}}
+\subsubsection{\texorpdfstring{Solve()}{Solve()}}
+{\footnotesize\ttfamily vector$<$ double $>$ M\+P\+C\+::\+Solve (\begin{DoxyParamCaption}\item[{const Vector\+Xd \&}]{state,  }\item[{const Vector\+Xd \&}]{ref }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+Solve the model given an initial state and a reference trajectory. Return the first actuations. 
+
+\subsection{Member Data Documentation}
+\mbox{\Hypertarget{classMPC_a821e5a57b25e8c83aaae02d44dab3ea8}\label{classMPC_a821e5a57b25e8c83aaae02d44dab3ea8}} 
+\index{M\+PC@{M\+PC}!bounds\+\_\+@{bounds\+\_\+}}
+\index{bounds\+\_\+@{bounds\+\_\+}!M\+PC@{M\+PC}}
+\subsubsection{\texorpdfstring{bounds\+\_\+}{bounds\_}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structBounds}{Bounds}} M\+P\+C\+::bounds\+\_\+\hspace{0.3cm}{\ttfamily [protected]}}
+
+\begin{quote}
+number of constraints (excluding box constraints) \end{quote}
+\mbox{\hyperlink{structBounds}{Bounds}} struct specifying input/state box constraints and whatever else a user chooses to add \mbox{\Hypertarget{classMPC_abbf9a3b26a6cbc6cad87cac1c8f2aaaf}\label{classMPC_abbf9a3b26a6cbc6cad87cac1c8f2aaaf}} 
+\index{M\+PC@{M\+PC}!model\+\_\+@{model\+\_\+}}
+\index{model\+\_\+@{model\+\_\+}!M\+PC@{M\+PC}}
+\subsubsection{\texorpdfstring{model\+\_\+}{model\_}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classModel}{Model}}\& M\+P\+C\+::model\+\_\+\hspace{0.3cm}{\ttfamily [protected]}}
+
+\mbox{\hyperlink{classModel}{Model}} object specifying dynamics, cost function, and additional constraints beyond box constraints in state and input \mbox{\Hypertarget{classMPC_a303dcbda2e7d051f5f8a34e01bc414bc}\label{classMPC_a303dcbda2e7d051f5f8a34e01bc414bc}} 
+\index{M\+PC@{M\+PC}!warmstart\+\_\+@{warmstart\+\_\+}}
+\index{warmstart\+\_\+@{warmstart\+\_\+}!M\+PC@{M\+PC}}
+\subsubsection{\texorpdfstring{warmstart\+\_\+}{warmstart\_}}
+{\footnotesize\ttfamily Cpp\+A\+D\+::vector$<$double$>$ M\+P\+C\+::warmstart\+\_\+\hspace{0.3cm}{\ttfamily [protected]}}
+
+\begin{quote}
+bookkeeping\+: this is set using the starts\+\_\+ vector of \mbox{\hyperlink{classModel}{Model}} to ensure consistency \end{quote}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+M\+P\+C.\+h\item 
+M\+P\+C.\+cpp\end{DoxyCompactItemize}

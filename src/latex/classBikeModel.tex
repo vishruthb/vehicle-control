@@ -1,0 +1,67 @@
+\hypertarget{classBikeModel}{}\section{Bike\+Model Class Reference}
+\label{classBikeModel}\index{Bike\+Model@{Bike\+Model}}
+
+
+Implementation of simple bike model used for direct N\+LP. The cost function parameters were taken from someone\textquotesingle{}s solution online just to debug things, will tune them more substantially later.  
+
+
+
+
+{\ttfamily \#include $<$Model.\+h$>$}
+
+Inheritance diagram for Bike\+Model\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classBikeModel}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classBikeModel_a66013cb6adbd9d439f63a4537a9aac23}\label{classBikeModel_a66013cb6adbd9d439f63a4537a9aac23}} 
+{\bfseries Bike\+Model} (int \mbox{\hyperlink{classModel_aca776f8a10906afa8a5c362034727921}{N}}, int \mbox{\hyperlink{classModel_a951f42de158e872b5affece79521b968}{nx}}, int \mbox{\hyperlink{classModel_a0afbb992dab28ae89f1b0b114d65689c}{nu}}, int delay, double dt, double vref, const Vector\+Xd \&coeffs=\{\})
+\item 
+void \mbox{\hyperlink{classBikeModel_a697e6ec00a4a38ca844c491041cc9b86}{set\+\_\+coeffs}} (const Vector\+Xd \&coeffs)
+\item 
+virtual int \mbox{\hyperlink{classBikeModel_a920787379d6fef804f46bc1f3f885a89}{xstart}} () override
+\item 
+virtual int \mbox{\hyperlink{classBikeModel_a05b988f106df902d1222dfb662d4b1fa}{ystart}} () override
+\end{DoxyCompactItemize}
+\subsection*{Additional Inherited Members}
+
+
+\subsection{Detailed Description}
+Implementation of simple bike model used for direct N\+LP. The cost function parameters were taken from someone\textquotesingle{}s solution online just to debug things, will tune them more substantially later. 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classBikeModel_a697e6ec00a4a38ca844c491041cc9b86}\label{classBikeModel_a697e6ec00a4a38ca844c491041cc9b86}} 
+\index{Bike\+Model@{Bike\+Model}!set\+\_\+coeffs@{set\+\_\+coeffs}}
+\index{set\+\_\+coeffs@{set\+\_\+coeffs}!Bike\+Model@{Bike\+Model}}
+\subsubsection{\texorpdfstring{set\+\_\+coeffs()}{set\_coeffs()}}
+{\footnotesize\ttfamily void Bike\+Model\+::set\+\_\+coeffs (\begin{DoxyParamCaption}\item[{const Vector\+Xd \&}]{coeffs }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+call this before every mpc solve to update reference trajectory, which is specified in terms of polynomial = sum\+\_\+\{i=0\}$^\wedge$2 coeffs\mbox{[}i\mbox{]} $\ast$ pow(x,i) \mbox{\Hypertarget{classBikeModel_a920787379d6fef804f46bc1f3f885a89}\label{classBikeModel_a920787379d6fef804f46bc1f3f885a89}} 
+\index{Bike\+Model@{Bike\+Model}!xstart@{xstart}}
+\index{xstart@{xstart}!Bike\+Model@{Bike\+Model}}
+\subsubsection{\texorpdfstring{xstart()}{xstart()}}
+{\footnotesize\ttfamily virtual int Bike\+Model\+::xstart (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+Needed to plot \mbox{\hyperlink{classMPC}{M\+PC}} planned trajectory in simulator\+: should return starts\+\_\+\mbox{[}X\mbox{]}, where X specifies the the position of X in the the state vector. e.\+g. if state\mbox{[}0\mbox{]} = x, then xstart shoudl return starts\+\_\+\mbox{[}0\mbox{]}; 
+
+Implements \mbox{\hyperlink{classModel_ab98f8c18036d9bada533325300865c5e}{Model}}.
+
+\mbox{\Hypertarget{classBikeModel_a05b988f106df902d1222dfb662d4b1fa}\label{classBikeModel_a05b988f106df902d1222dfb662d4b1fa}} 
+\index{Bike\+Model@{Bike\+Model}!ystart@{ystart}}
+\index{ystart@{ystart}!Bike\+Model@{Bike\+Model}}
+\subsubsection{\texorpdfstring{ystart()}{ystart()}}
+{\footnotesize\ttfamily virtual int Bike\+Model\+::ystart (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+Needed to plot \mbox{\hyperlink{classMPC}{M\+PC}} planned trajectory in simulator\+: should return starts\+\_\+\mbox{[}Y\mbox{]}, where Y specifies the the position of X in the the state vector. e.\+g. if state\mbox{[}1\mbox{]} = y, then xstart shoudl return starts\+\_\+\mbox{[}1\mbox{]}; 
+
+Implements \mbox{\hyperlink{classModel_ae505a277c05e465d0a41fa75d4116350}{Model}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Model.\+h\end{DoxyCompactItemize}

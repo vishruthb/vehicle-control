@@ -1,0 +1,3 @@
+/home/nmatni/CppFun/SelfDrivingCar/build/CMakeFiles/rebuild_cache.dir
+/home/nmatni/CppFun/SelfDrivingCar/build/CMakeFiles/mpc.dir
+/home/nmatni/CppFun/SelfDrivingCar/build/CMakeFiles/edit_cache.dir
