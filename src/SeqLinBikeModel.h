@@ -8,10 +8,9 @@ using std::sin;
 
 class SeqLinBikeModel : public BikeModel {
 private:
-  vector<double> trajectory_;
-
-  // for now just use nonlinear BikeModel's cost
-  virtual AD<double> Cost(int t, const ADVec &xt, const ADVec &ut,
+  // For now ust use nonlinear BikeModel's cost, uncomment and modify below if
+  // you want to deviate from the NL model's cost
+  /* virtual AD<double> Cost(int t, const ADVec &xt, const ADVec &ut,
                           const ADVec &utp1) override {
     return BikeModel::Cost(t, xt, ut, utp1);
   }
@@ -19,66 +18,80 @@ private:
   // ditto
   virtual AD<double> TerminalCost(const ADVec &xN) override {
     return BikeModel::TerminalCost(xN);
-  }
+    }*/
 
+  /// compute jacobian d/dx f(x,u) evaluated at linearization point (x0,u0)
   MatrixXd ComputeA(const vector<double> &x0, const vector<double> &u0) {
-    AD<double> x = x0[X];
-    AD<double> y = x0[Y];
-    AD<double> psi = x0[PSI];
-    AD<double> v = x0[V];
-    AD<double> cte = x0[CTE];
-    AD<double> epsi = x0[EPSI];
-    AD<double> a = u0[A];
-    AD<double> delta = u0[DELTA];
+    double x = x0[X];
+    double y = x0[Y];
+    double psi = x0[PSI];
+    double v = x0[V];
+    double cte = x0[CTE];
+    double epsi = x0[EPSI];
+    double a = u0[A];
+    double delta = u0[DELTA];
 
-    MatrixXd A;
+    Eigen::Matrix<double, 6, 6> A;
+
     // compute jacobian wrt to x and evaluate at xt, ut
-    A << 1, 0, -v * sin(psi) * dt_, cos(psi) * dt_, 0, 0,  //
-        0, 1, v * cos(psi) * dt_, sin(psi) * dt_, 0, 0,    //
-        0, 0, 1, -1 / Lf_ * delta * dt_, 0, 0,             //
-        0, 0, 0, 1, 0, 0,                                  //
-        0, -1, 0, sin(epsi) * dt_, 0, v * cos(epsi) * dt_, //
-        0, 0, 1, -1 / Lf_ * delta * dt_, 0, 0;
+    A << 1, 0, (-v * sin(psi) * dt_), (cos(psi) * dt_), 0, 0,  //
+        0, 1, (v * cos(psi) * dt_), (sin(psi) * dt_), 0, 0,    //
+        0, 0, 1, (-1 / Lf_ * delta * dt_), 0, 0,               //
+        0, 0, 0, 1, 0, 0,                                      //
+        0, -1, 0, (sin(epsi) * dt_), 0, (v * cos(epsi) * dt_), //
+        0, 0, 1, (-1 / Lf_ * delta * dt_), 0, 0;
 
     return A;
   }
 
+  /// compute jacobian d/du f(x,u) evaluated at linearization point (x0,u0)
   MatrixXd ComputeB(const vector<double> &x0, const vector<double> &u0) {
-    AD<double> x = x0[X];
-    AD<double> y = x0[Y];
-    AD<double> psi = x0[PSI];
-    AD<double> v = x0[V];
-    AD<double> cte = x0[CTE];
-    AD<double> epsi = x0[EPSI];
-    AD<double> a = u0[A];
-    AD<double> delta = u0[DELTA];
+    double x = x0[X];
+    double y = x0[Y];
+    double psi = x0[PSI];
+    double v = x0[V];
+    double cte = x0[CTE];
+    double epsi = x0[EPSI];
+    double a = u0[A];
+    double delta = u0[DELTA];
 
-    MatrixXd B;
+    MatrixXd B(6, 2);
     // compute jacobian wrt to u and evaluate at x0, u0
     B << 0, 0,             //
         0, 0,              //
-        0, -v / Lf_ * dt_, //
-        dt_, 0,            //
+        -v / Lf_ * dt_, 0, //
+        0, dt_,            //
         0, 0,              //
-        0, -v / Lf_ * dt_;
+        -v / Lf_ * dt_, 0;
 
     return B;
   }
-  // here's where the magic happens
+  /// If we're on our first run, use the nonlinear model.  Otherwise, linearize
+  /// around stored trajectory (which is previous MPC run's solution, but with
+  /// the actual state x0 swapped in
   virtual ADVec DynamicsF(int t, const ADVec &xt, const ADVec &ut) override {
-    vector<double> x0 = x_t(t, trajectory_);
-    vector<double> u0 = u_t(t, trajectory_);
 
-    MatrixXd A = ComputeA(x0, u0);
-    MatrixXd B = ComputeB(x0, u0);
+    // if this is our first run, use nonlinear solver to initialize
+    if (trajectory_.size() == 0) {
+      return BikeModel::DynamicsF(t, xt, ut);
+    }
 
+    // if t=0, we use the measured state x(0) = x0 to initialize,
+    // otherwise, we use shifted trjaectory
+    vector<double> x0 = x_t(t + 1, trajectory_);
+    vector<double> u0 = u_t(t + 1, trajectory_);
+
+    MatrixXd mA = ComputeA(x0, u0);
+    MatrixXd mB = ComputeB(x0, u0);
+
+    AD<double> x = xt[X];
     AD<double> f = coeffs_[0] + coeffs_[1] * x + coeffs_[2] * CppAD::pow(x, 2) +
                    coeffs_[3] * CppAD::pow(x, 3);
 
     AD<double> psides = CppAD::atan(coeffs_[1] + 2 * coeffs_[2] * x +
                                     3 * coeffs_[3] * CppAD::pow(x, 2));
 
-    auto Dot = [] AD<double>(const VectorXd &a, const ADVec &x) {
+    auto Dot = [](const VectorXd &a, const ADVec &x) {
       AD<double> ax = 0;
       for (int i = 0; i < a.size(); i++)
         ax += a[i] * x[i];
@@ -86,13 +99,42 @@ private:
     };
 
     ADVec fxtut(nx());
-    fxtut[X] = x0[X] + Dot(A.row(X), xt) + Dot(B.row(X), ut);
-    fxtut[Y] = x0[Y] + Dot(A.row(Y), xt) + Dot(B.row(Y), ut);
-    fxtut[PSI] = x0[PSI] + Dot(A.row(PSI), xt) + Dot(B.row(PSI), ut);
-    fxtut[V] = x0[V] + Dot(A.row(V), xt) + Dot(B.row(V), ut);
-    fxtut[CTE] = x0[CTE] + f + Dot(A.row(CTE), xt) + Dot(B.row(CTE), ut);
-    fxtut[EPSI] =
-        x0[EPSI] - psides + Dot(A.row(EPSI), xt) + Dot(B.row(EPSI), ut);
+    double xx = x0[X];
+    double y = x0[Y];
+    double psi = x0[PSI];
+    double v = x0[V];
+    double cte = x0[CTE];
+    double epsi = x0[EPSI];
+    double a = u0[A];
+    double delta = u0[DELTA];
+
+    // first add term contributed from linearization point
+    fxtut[X] = xx + v * cos(psi) * dt_;
+    fxtut[Y] = y + v * sin(psi) * dt_;
+    fxtut[PSI] = psi - v / Lf_ * delta * dt_;
+    fxtut[V] = v + a * dt_;
+    fxtut[CTE] = (f - y) + v * sin(epsi) * dt_;
+    fxtut[EPSI] = (psi - psides) - v / Lf_ * delta * dt_;
+
+    // now add term from linear deviations
+
+    auto diff = [](const ADVec &v1, const vector<double> &v2) {
+      ADVec del(v1.size());
+      for (int i = 0; i < v1.size(); i++)
+        del[i] = v1[i] - v2[i];
+
+      return del;
+    };
+
+    ADVec dx = diff(xt, x0);
+    ADVec du = diff(ut, u0);
+
+    fxtut[X] += Dot(mA.row(X), dx) + Dot(mB.row(X), du);
+    fxtut[Y] += Dot(mA.row(Y), dx) + Dot(mB.row(Y), du);
+    fxtut[PSI] += Dot(mA.row(PSI), dx) + Dot(mB.row(PSI), du);
+    fxtut[V] += Dot(mA.row(V), dx) + Dot(mB.row(V), du);
+    fxtut[CTE] += Dot(mA.row(CTE), dx) + Dot(mB.row(CTE), du);
+    fxtut[EPSI] += Dot(mA.row(EPSI), dx) + Dot(mB.row(EPSI), du);
 
     return fxtut;
   }
@@ -101,12 +143,7 @@ public:
   SeqLinBikeModel(int N, int nx, int nu, int delay, double dt, double vref,
                   const VectorXd &coeffs = {},
                   const vector<double> &trajectory = {})
-      : BikeModel(N, nx, nu, delay, dt, vref, coeffs), trajectory_(trajectory) {
-  }
-
-  void set_trajectory(const vector<double> &trajectory) {
-    trajectory_ = trajectory;
-  }
+      : BikeModel(N, nx, nu, delay, dt, vref, coeffs, trajectory) {}
 
   virtual ~SeqLinBikeModel() {}
 };

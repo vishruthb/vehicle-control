@@ -48,8 +48,7 @@ protected:
   vector<int> starts_; ///> bookkeeping: this is set using the starts_ vector of
                        ///> Model to ensure consistency
 
-  CppAD::vector<double>
-      warmstart_; ///> remember last run's solution for warm starting
+  vector<double> warmstart_; ///> remember last run's solution for warm starting
 
   virtual void SetupWarmStart(Dvector &vars, const VectorXd &state);
   virtual void SetupVarBounds(Dvector &vars_lowerbound,
@@ -57,8 +56,9 @@ protected:
   virtual void SetupConstraintBounds(Dvector &constraints_lowerbound,
                                      Dvector &constraints_upperbound,
                                      const VectorXd &state);
-  virtual void ProcessSolution(vector<double> &result, Dvector sol,
-                               int shift = 0);
+
+  virtual void ProcessSolution(vector<double> &result,
+                               const vector<double> &sol, int shift = 0);
   virtual void SetupOptions(string &options);
 
 public:
@@ -87,9 +87,8 @@ public:
   virtual vector<double> Solve(const VectorXd &state, const VectorXd &ref);
 };
 
-///\brief Place holder for what I'm working on now -- not clear if the
-/// sequential linearization implementation will require a modification to base
-/// MPC class, or will be fine with just a new model
+///\brief Almost identical to standard MPC, just needs to update model's
+/// trajectory to be used in linearization step
 class SeqLinMPC : public MPC {
 
 public:
@@ -97,10 +96,25 @@ public:
             Bounds bounds)
       : MPC(N, model, nvars, nconstraints, bounds) {}
 
-  // the reference trajectory is specified by polynomial coefficients contained
-  // in coeffs (named ref in base class)
-  // virtual vector<double> Solve(const VectorXd &state,
-  // const VectorXd &coeffs) override;
+  virtual vector<double> Solve(const VectorXd &state,
+                               const VectorXd &ref) override {
+    // we use state[0] of warmstart_ to store x0 to be used in seq.
+    // linearization.  This is ugly. but we'll leave it as is for now.
+    if (warmstart_.size()) {
+      for (int i = 0; i < model_.nx(); i++)
+        warmstart_[starts_[i]] = state[i];
+      model_.set_trajectory(warmstart_);
+    }
+    return MPC::Solve(state, ref);
+  }
+
+  virtual void ProcessSolution(vector<double> &result,
+                               const vector<double> &sol,
+                               int shift = 0) override {
+
+    MPC::ProcessSolution(result, sol, shift);
+    model_.set_trajectory(warmstart_);
+  }
 };
 
 #endif /* MPC_H */

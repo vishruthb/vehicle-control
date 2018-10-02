@@ -28,6 +28,7 @@ protected:
   vector<int>
       starts_; ///> bookkeeping vector: starts_[i] says where in optimization
                ///> vector vars component i (either a scalar state or input)
+  vector<double> trajectory_;
 
   /// Pure virtual function: should return per-stage cost
   virtual AD<double> Cost(int t, const ADVec &xt, const ADVec &ut,
@@ -63,14 +64,22 @@ public:
 
   /// Establishes opitmization horizon (N), state-dim (nx), input-dim (nu),
   /// input delay (delay), and populates bookkeeping vector starts_
-  Model(int N, int nx, int nu, int delay)
-      : N_(N), nx_(nx), nu_(nu), delay_(delay), starts_{0} {
+  Model(int N, int nx, int nu, int delay, const vector<double> &trajectory = {})
+      : N_(N), nx_(nx), nu_(nu), delay_(delay), starts_{0},
+        trajectory_(trajectory) {
     for (int i = 1; i <= nx_; ++i)
       starts_.push_back(starts_[i - 1] + N);
 
     for (int i = 0; i < nu_ - 1; ++i)
       starts_.push_back(starts_[nx_ + i] + N - 1);
   }
+
+  /// this, if called, sets member variable trajectory_.  Currently used by
+  /// SeqLinMPC to store last run's solution, which is what we linearize
+  /// about on the next run
+  void set_trajectory(vector<double> &trajectory) { trajectory_ = trajectory; }
+
+  bool initialized() { return (trajectory_.size() > 0); }
 
   /// returns reference to starts vector
   vector<int> &starts() { return starts_; }
@@ -174,6 +183,7 @@ protected:
     return cost;
   }
   virtual ADVec DynamicsF(int t, const ADVec &xt, const ADVec &ut) override {
+
     AD<double> x = xt[X];
     AD<double> y = xt[Y];
     AD<double> psi = xt[PSI];
@@ -202,8 +212,9 @@ protected:
 
 public:
   BikeModel(int N, int nx, int nu, int delay, double dt, double vref,
-            const VectorXd &coeffs = {})
-      : Model(N, nx, nu, delay), dt_(dt), vref_(vref), coeffs_{coeffs} {}
+            const VectorXd &coeffs = {}, const vector<double> &trajectory = {})
+      : Model(N, nx, nu, delay, trajectory), dt_(dt), vref_(vref),
+        coeffs_(coeffs) {}
 
   /// call this before every mpc solve to update reference trajectory, which is
   /// specified in terms of polynomial = sum_{i=0}^2 coeffs[i] * pow(x,i)

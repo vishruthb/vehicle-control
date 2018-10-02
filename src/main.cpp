@@ -104,7 +104,7 @@ int main() {
   SeqLinBikeModel bike_model(10, 6, 2, 1, 0.1, 70);
   Model &model = bike_model;
 
-  MPC mpc(10, model, 10 * 6 + 9 * 2, 10 * 6, bounds);
+  SeqLinMPC mpc(10, model, 10 * 6 + 9 * 2, 10 * 6, bounds);
 
   h.onMessage([&mpc, &bike_model](uWS::WebSocket<uWS::SERVER> ws, char *data,
                                   size_t length, uWS::OpCode opCode) {

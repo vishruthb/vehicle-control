@@ -71,7 +71,8 @@ void MPC::SetupConstraintBounds(Dvector &constraints_lowerbound,
   }
 }
 
-void MPC::ProcessSolution(vector<double> &result, Dvector sol, int shift) {
+void MPC::ProcessSolution(vector<double> &result, const vector<double> &sol,
+                          int shift) {
   // push back first actutation values
   for (int i = model_.nx(); i < starts_.size(); i++) {
     result.push_back(sol[starts_[i] + shift]);
@@ -148,8 +149,17 @@ vector<double> MPC::Solve(const VectorXd &state, const VectorXd &coeffs) {
 
   vector<double> result;
   if (ok) {
-    ProcessSolution(result, solution.x);
-    warmstart_ = solution.x;
+
+    if (warmstart_.size())
+      warmstart_.clear();
+
+    warmstart_.resize(solution.x.size());
+
+    for (int i = 0; i < solution.x.size(); i++)
+      warmstart_[i] = solution.x[i];
+
+    ProcessSolution(result, warmstart_, 0);
+
   } else {
     // if we get an infeasible solution, use last feasible one shifted by one
     // TODO: this no longer makes sense after if we get mroe than one infeasible
