@@ -163,9 +163,9 @@ protected:
     cost += CppAD::pow(xt[V] - vref_, 2);
 
     cost += 5 * CppAD::pow(ut[DELTA], 2);
-    cost += 5 * CppAD::pow(ut[DELTA], 2);
+    cost += 5 * CppAD::pow(ut[A], 2);
 
-    cost += 700 * CppAD::pow(ut[DELTA] * xt[V], 2);
+    cost += 250 * CppAD::pow(ut[DELTA] * xt[V], 2);
 
     cost += 200 * CppAD::pow(utp1[DELTA] - ut[DELTA], 2);
     cost += 10 * CppAD::pow(utp1[A] - ut[A], 2);

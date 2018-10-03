@@ -8,12 +8,36 @@ using std::sin;
 
 class SeqLinBikeModel : public BikeModel {
 private:
-  // For now ust use nonlinear BikeModel's cost, uncomment and modify below if
-  // you want to deviate from the NL model's cost
-  /* virtual AD<double> Cost(int t, const ADVec &xt, const ADVec &ut,
+  virtual AD<double> Cost(int t, const ADVec &xt, const ADVec &ut,
                           const ADVec &utp1) override {
-    return BikeModel::Cost(t, xt, ut, utp1);
+    if (trajectory_.size() == 0)
+      return BikeModel::Cost(t, xt, ut, utp1);
+
+    AD<double> cost(0);
+
+    cost += 3000 * CppAD::pow(xt[CTE], 2);
+    cost += 3000 * CppAD::pow(xt[EPSI], 2);
+    cost += CppAD::pow(xt[V] - vref_, 2);
+
+    cost += 5 * CppAD::pow(ut[DELTA], 2);
+    cost += 5 * CppAD::pow(ut[A], 2);
+
+    double v0 = x_t(t + 1, trajectory_)[V];
+    double d0 = u_t(t + 1, trajectory_)[DELTA];
+    AD<double> dv = xt[V] - v0;
+    AD<double> ddel = ut[DELTA] - d0;
+
+    // take quadratic approximation to BikeModel's non-convex term
+    cost += 250 * (2 * v0 * v0 * d0 * ddel + v0 * v0 * CppAD::pow(ddel, 2) +
+                   2 * v0 * d0 * d0 * dv + 2 * v0 * d0 * dv * ddel +
+                   d0 * d0 * CppAD::pow(dv, 2));
+
+    cost += 200 * CppAD::pow(utp1[DELTA] - ut[DELTA], 2);
+    cost += 10 * CppAD::pow(utp1[A] - ut[A], 2);
+
+    return cost;
   }
+  /*
 
   // ditto
   virtual AD<double> TerminalCost(const ADVec &xN) override {

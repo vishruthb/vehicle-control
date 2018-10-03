@@ -94,13 +94,13 @@ int main() {
   Bounds bounds;
 
   bounds.x_up_ = vector<double>(6, 1e19);
+
   bounds.x_low_ = vector<double>(6, -1e19);
+
   bounds.u_up_ = vector<double>{deg2rad(25), 1};
   bounds.u_low_ = vector<double>{-1 * deg2rad(25), -1};
 
   // MPC is initialized here!
-  // TODO: Make a SeqLinMPC class that deals with the trajectory updates for
-  // sequential linearization
   SeqLinBikeModel bike_model(10, 6, 2, 1, 0.1, 70);
   Model &model = bike_model;
 
