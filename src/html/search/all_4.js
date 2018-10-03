@@ -1,6 +1,4 @@
 var searchData=
 [
-  ['model',['Model',['../classModel.html',1,'Model'],['../classModel.html#ae594ebc83ab169fcccda2c9e238c0d90',1,'Model::Model()']]],
-  ['model_5f',['model_',['../classMPC.html#abbf9a3b26a6cbc6cad87cac1c8f2aaaf',1,'MPC']]],
-  ['mpc',['MPC',['../classMPC.html',1,'']]]
+  ['get_5fhorizon',['get_horizon',['../classMPC.html#a72dfd8e42f90e52188826e28b4a9ef12',1,'MPC']]]
 ];

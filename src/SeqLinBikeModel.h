@@ -8,6 +8,8 @@ using std::sin;
 
 class SeqLinBikeModel : public BikeModel {
 private:
+  /// We take a quadratic approximation to the nonconvex term v^2 delta^2 in
+  /// BikeModel's cost function
   virtual AD<double> Cost(int t, const ADVec &xt, const ADVec &ut,
                           const ADVec &utp1) override {
     if (trajectory_.size() == 0)
@@ -37,12 +39,6 @@ private:
 
     return cost;
   }
-  /*
-
-  // ditto
-  virtual AD<double> TerminalCost(const ADVec &xN) override {
-    return BikeModel::TerminalCost(xN);
-    }*/
 
   /// compute jacobian d/dx f(x,u) evaluated at linearization point (x0,u0)
   MatrixXd ComputeA(const vector<double> &x0, const vector<double> &u0) {
@@ -108,16 +104,6 @@ private:
     vector<double> x0 = x_t(t + 1, trajectory_);
     vector<double> u0 = u_t(t + 1, trajectory_);
 
-    MatrixXd mA = ComputeA(x0, u0);
-    MatrixXd mB = ComputeB(x0, u0);
-
-    auto Dot = [](const VectorXd &a, const ADVec &x) {
-      AD<double> ax = 0;
-      for (int i = 0; i < a.size(); i++)
-        ax += a[i] * x[i];
-      return ax;
-    };
-
     ADVec fxtut(nx());
     double x = x0[X];
     double y = x0[Y];
@@ -154,6 +140,16 @@ private:
 
     ADVec dx = diff(xt, x0);
     ADVec du = diff(ut, u0);
+
+    MatrixXd mA = ComputeA(x0, u0);
+    MatrixXd mB = ComputeB(x0, u0);
+
+    auto Dot = [](const VectorXd &a, const ADVec &x) {
+      AD<double> ax = 0;
+      for (int i = 0; i < a.size(); i++)
+        ax += a[i] * x[i];
+      return ax;
+    };
 
     fxtut[X] += Dot(mA.row(X), dx) + Dot(mB.row(X), du);
     fxtut[Y] += Dot(mA.row(Y), dx) + Dot(mB.row(Y), du);

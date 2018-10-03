@@ -15,9 +15,8 @@ using namespace std;
 
 /*! \mainpage
 Code base being developed to interface with the Udacity Unity3d Self-driving car
-simulator (available in my repo:
-https://github.com/nikolaimatni/CppFun/tree/master/SelfDrivingCar).  For now we
-are working with the default MPC track (term 2, project 5), but we will
+simulator (available here: https://github.com/nikolaimatni/SelfDrivingCar).  For
+now we are working with the default MPC track (term 2, project 5), but we will
 ultimately customize.
 
 The basic work flow here is you need to implement a realization of the virtual

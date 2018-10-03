@@ -75,15 +75,6 @@ $(function() {
  <a href="classMPC.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="MPC_8h_source.html">MPC.h</a>&gt;</code></p>
-<div class="dynheader">
-Inheritance diagram for MPC:</div>
-<div class="dyncontent">
- <div class="center">
-  <img src="classMPC.png" usemap="#MPC_map" alt=""/>
-  <map id="MPC_map" name="MPC_map">
-<area href="classSeqLinMPC.html" title="Place holder for what I&#39;m working on now – not clear if the sequential linearization implementation w..." alt="SeqLinMPC" shape="rect" coords="0,56,78,80"/>
-</map>
- </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -120,9 +111,9 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>SetupVarBound
 <tr class="memitem:a0c45ccce078c88436c7db83892efde7c"><td class="memItemLeft" align="right" valign="top"><a id="a0c45ccce078c88436c7db83892efde7c"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>SetupConstraintBounds</b> (Dvector &amp;constraints_lowerbound, Dvector &amp;constraints_upperbound, const VectorXd &amp;state)</td></tr>
 <tr class="separator:a0c45ccce078c88436c7db83892efde7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a034f942cd45fedc786932dcf328ec790"><td class="memItemLeft" align="right" valign="top"><a id="a034f942cd45fedc786932dcf328ec790"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>ProcessSolution</b> (vector&lt; double &gt; &amp;result, Dvector sol, int shift=0)</td></tr>
-<tr class="separator:a034f942cd45fedc786932dcf328ec790"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a37401456da09ec38bcf744d4bfc1ce96"><td class="memItemLeft" align="right" valign="top"><a id="a37401456da09ec38bcf744d4bfc1ce96"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>ProcessSolution</b> (vector&lt; double &gt; &amp;result, const vector&lt; double &gt; &amp;sol, int shift=0)</td></tr>
+<tr class="separator:a37401456da09ec38bcf744d4bfc1ce96"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad15f9e5ae586e33af171a3b09363e432"><td class="memItemLeft" align="right" valign="top"><a id="ad15f9e5ae586e33af171a3b09363e432"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>SetupOptions</b> (string &amp;options)</td></tr>
 <tr class="separator:ad15f9e5ae586e33af171a3b09363e432"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -150,8 +141,8 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
 <tr class="memitem:af52144a70629c4809d28790fd7c0fdf3"><td class="memItemLeft" align="right" valign="top"><a id="af52144a70629c4809d28790fd7c0fdf3"></a>
 vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>starts_</b></td></tr>
 <tr class="separator:af52144a70629c4809d28790fd7c0fdf3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a303dcbda2e7d051f5f8a34e01bc414bc"><td class="memItemLeft" align="right" valign="top">CppAD::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMPC.html#a303dcbda2e7d051f5f8a34e01bc414bc">warmstart_</a></td></tr>
-<tr class="separator:a303dcbda2e7d051f5f8a34e01bc414bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a89874cd77d24cc8c7294c6643931e064"><td class="memItemLeft" align="right" valign="top">vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMPC.html#a89874cd77d24cc8c7294c6643931e064">warmstart_</a></td></tr>
+<tr class="separator:a89874cd77d24cc8c7294c6643931e064"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p class="">Base <a class="el" href="classMPC.html" title="Base MPC class. Whereas the model that you pass in takes care of specifying the dynamics and the cost...">MPC</a> class. Whereas the model that you pass in takes care of specifying the dynamics and the cost function, the <a class="el" href="classMPC.html" title="Base MPC class. Whereas the model that you pass in takes care of specifying the dynamics and the cost...">MPC</a> object sets up the bounds on variables (as specified in <a class="el" href="structBounds.html" title="Struct used to hold bounds for state constraints. Specifically, x_low_ &lt;= x(t) &lt;= x_up_,...">Bounds</a> object), and on constraints (enforces x(0) = x0, x(t+1) - f(x(t),u(t)) = 0), and also warmstarts your solver with a suitably shifted version of the last run's solution. </p>
@@ -243,8 +234,8 @@ vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>starts
 
 </div>
 </div>
-<a id="a303dcbda2e7d051f5f8a34e01bc414bc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a303dcbda2e7d051f5f8a34e01bc414bc">&#9670;&nbsp;</a></span>warmstart_</h2>
+<a id="a89874cd77d24cc8c7294c6643931e064"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a89874cd77d24cc8c7294c6643931e064">&#9670;&nbsp;</a></span>warmstart_</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -253,7 +244,7 @@ vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>starts
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">CppAD::vector&lt;double&gt; MPC::warmstart_</td>
+          <td class="memname">vector&lt;double&gt; MPC::warmstart_</td>
         </tr>
       </table>
   </td>

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['delay_5f',['delay_',['../classModel.html#aac68536265db5eab9bb3967db61c8f70',1,'Model']]]
+  ['coeffs_5f',['coeffs_',['../classBikeModel.html#aad97836300d513f5743498d62f47e08a',1,'BikeModel']]]
 ];

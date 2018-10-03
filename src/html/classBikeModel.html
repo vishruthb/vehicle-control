@@ -63,6 +63,9 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pro-types">Protected Types</a> &#124;
+<a href="#pro-methods">Protected Member Functions</a> &#124;
+<a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="classBikeModel-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">BikeModel Class Reference</div>  </div>
@@ -79,15 +82,16 @@ Inheritance diagram for BikeModel:</div>
  <div class="center">
   <img src="classBikeModel.png" usemap="#BikeModel_map" alt=""/>
   <map id="BikeModel_map" name="BikeModel_map">
-<area href="classModel.html" title="Base Model Class. Takes care of all of the low-level details needed to implement the cost function,..." alt="Model" shape="rect" coords="0,0,71,24"/>
+<area href="classModel.html" title="Base Model Class. Takes care of all of the low-level details needed to implement the cost function,..." alt="Model" shape="rect" coords="0,0,109,24"/>
+<area href="classSeqLinBikeModel.html" alt="SeqLinBikeModel" shape="rect" coords="0,112,109,136"/>
 </map>
  </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a66013cb6adbd9d439f63a4537a9aac23"><td class="memItemLeft" align="right" valign="top"><a id="a66013cb6adbd9d439f63a4537a9aac23"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>BikeModel</b> (int <a class="el" href="classModel.html#aca776f8a10906afa8a5c362034727921">N</a>, int <a class="el" href="classModel.html#a951f42de158e872b5affece79521b968">nx</a>, int <a class="el" href="classModel.html#a0afbb992dab28ae89f1b0b114d65689c">nu</a>, int delay, double dt, double vref, const VectorXd &amp;coeffs={})</td></tr>
-<tr class="separator:a66013cb6adbd9d439f63a4537a9aac23"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a379ad0dd5141fd1627e27d607bba76b5"><td class="memItemLeft" align="right" valign="top"><a id="a379ad0dd5141fd1627e27d607bba76b5"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>BikeModel</b> (int <a class="el" href="classModel.html#aca776f8a10906afa8a5c362034727921">N</a>, int <a class="el" href="classModel.html#a951f42de158e872b5affece79521b968">nx</a>, int <a class="el" href="classModel.html#a0afbb992dab28ae89f1b0b114d65689c">nu</a>, int delay, double dt, double vref, const VectorXd &amp;coeffs={}, const vector&lt; double &gt; &amp;trajectory={})</td></tr>
+<tr class="separator:a379ad0dd5141fd1627e27d607bba76b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a697e6ec00a4a38ca844c491041cc9b86"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBikeModel.html#a697e6ec00a4a38ca844c491041cc9b86">set_coeffs</a> (const VectorXd &amp;coeffs)</td></tr>
 <tr class="separator:a697e6ec00a4a38ca844c491041cc9b86"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a920787379d6fef804f46bc1f3f885a89"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBikeModel.html#a920787379d6fef804f46bc1f3f885a89">xstart</a> () override</td></tr>
@@ -98,8 +102,13 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a5a1534764960064921f2823621a1dddb inherit pub_methods_classModel"><td class="memItemLeft" align="right" valign="top"><a id="a5a1534764960064921f2823621a1dddb"></a>
 typedef&#160;</td><td class="memItemRight" valign="bottom"><b>CPPAD_TESTVECTOR</b> (AD&lt; double &gt;) ADvector</td></tr>
 <tr class="separator:a5a1534764960064921f2823621a1dddb inherit pub_methods_classModel"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae594ebc83ab169fcccda2c9e238c0d90 inherit pub_methods_classModel"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classModel.html#ae594ebc83ab169fcccda2c9e238c0d90">Model</a> (int <a class="el" href="classModel.html#aca776f8a10906afa8a5c362034727921">N</a>, int <a class="el" href="classModel.html#a951f42de158e872b5affece79521b968">nx</a>, int <a class="el" href="classModel.html#a0afbb992dab28ae89f1b0b114d65689c">nu</a>, int delay)</td></tr>
-<tr class="separator:ae594ebc83ab169fcccda2c9e238c0d90 inherit pub_methods_classModel"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa480bf5dbdbf89e5221ab1aef113ece0 inherit pub_methods_classModel"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classModel.html#aa480bf5dbdbf89e5221ab1aef113ece0">Model</a> (int <a class="el" href="classModel.html#aca776f8a10906afa8a5c362034727921">N</a>, int <a class="el" href="classModel.html#a951f42de158e872b5affece79521b968">nx</a>, int <a class="el" href="classModel.html#a0afbb992dab28ae89f1b0b114d65689c">nu</a>, int delay, const vector&lt; double &gt; &amp;trajectory={})</td></tr>
+<tr class="separator:aa480bf5dbdbf89e5221ab1aef113ece0 inherit pub_methods_classModel"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a98b6f05729855e93672272f5a9763566 inherit pub_methods_classModel"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classModel.html#a98b6f05729855e93672272f5a9763566">set_trajectory</a> (vector&lt; double &gt; &amp;trajectory)</td></tr>
+<tr class="separator:a98b6f05729855e93672272f5a9763566 inherit pub_methods_classModel"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a13639c921a1b81ae17f349bf866deb9d inherit pub_methods_classModel"><td class="memItemLeft" align="right" valign="top"><a id="a13639c921a1b81ae17f349bf866deb9d"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>initialized</b> ()</td></tr>
+<tr class="separator:a13639c921a1b81ae17f349bf866deb9d inherit pub_methods_classModel"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a206c5adc8789eed1598f61be030247af inherit pub_methods_classModel"><td class="memItemLeft" align="right" valign="top"><a id="a206c5adc8789eed1598f61be030247af"></a>
 vector&lt; int &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classModel.html#a206c5adc8789eed1598f61be030247af">starts</a> ()</td></tr>
 <tr class="memdesc:a206c5adc8789eed1598f61be030247af inherit pub_methods_classModel"><td class="mdescLeft">&#160;</td><td class="mdescRight">returns reference to starts vector <br /></td></tr>
@@ -119,17 +128,66 @@ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class
 <tr class="memitem:a138487dfb01ab6af0856c493f20ad179 inherit pub_methods_classModel"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classModel.html#a138487dfb01ab6af0856c493f20ad179">operator()</a> (ADVec &amp;fg, const ADVec &amp;vars)</td></tr>
 <tr class="separator:a138487dfb01ab6af0856c493f20ad179 inherit pub_methods_classModel"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
-Additional Inherited Members</h2></td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-types"></a>
+Protected Types</h2></td></tr>
+<tr class="memitem:a794e1e8dcf6d5e58803d851ca097dc63"><td class="memItemLeft" align="right" valign="top"><a id="a794e1e8dcf6d5e58803d851ca097dc63"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>State</b> { <br />
+&#160;&#160;<b>X</b>, 
+<b>Y</b>, 
+<b>PSI</b>, 
+<b>V</b>, 
+<br />
+&#160;&#160;<b>CTE</b>, 
+<b>EPSI</b>
+<br />
+ }</td></tr>
+<tr class="separator:a794e1e8dcf6d5e58803d851ca097dc63"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b8c73f626805ae449dac8cc614dd6ec"><td class="memItemLeft" align="right" valign="top"><a id="a9b8c73f626805ae449dac8cc614dd6ec"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>Input</b> { <b>DELTA</b>, 
+<b>A</b>
+ }</td></tr>
+<tr class="separator:a9b8c73f626805ae449dac8cc614dd6ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
+Protected Member Functions</h2></td></tr>
+<tr class="memitem:a5e1e33879d7c1d78114698fede96644b"><td class="memItemLeft" align="right" valign="top"><a id="a5e1e33879d7c1d78114698fede96644b"></a>
+virtual AD&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBikeModel.html#a5e1e33879d7c1d78114698fede96644b">Cost</a> (int t, const ADVec &amp;xt, const ADVec &amp;ut, const ADVec &amp;utp1) override</td></tr>
+<tr class="memdesc:a5e1e33879d7c1d78114698fede96644b"><td class="mdescLeft">&#160;</td><td class="mdescRight">&gt;model parameter roughly specifying turning radius <br /></td></tr>
+<tr class="separator:a5e1e33879d7c1d78114698fede96644b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a41e34fb81b1be3b7fc83f38ddba6e27a"><td class="memItemLeft" align="right" valign="top"><a id="a41e34fb81b1be3b7fc83f38ddba6e27a"></a>
+virtual AD&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBikeModel.html#a41e34fb81b1be3b7fc83f38ddba6e27a">TerminalCost</a> (const ADVec &amp;xN) override</td></tr>
+<tr class="memdesc:a41e34fb81b1be3b7fc83f38ddba6e27a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pure virtual function: should return terminal cost. <br /></td></tr>
+<tr class="separator:a41e34fb81b1be3b7fc83f38ddba6e27a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a501b47d01bda90c2d6ce7392acb7224e"><td class="memItemLeft" align="right" valign="top"><a id="a501b47d01bda90c2d6ce7392acb7224e"></a>
+virtual ADVec&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBikeModel.html#a501b47d01bda90c2d6ce7392acb7224e">DynamicsF</a> (int t, const ADVec &amp;xt, const ADVec &amp;ut) override</td></tr>
+<tr class="memdesc:a501b47d01bda90c2d6ce7392acb7224e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pure virtual function: should return x(t+1) = f(x(t),u(t)) <br /></td></tr>
+<tr class="separator:a501b47d01bda90c2d6ce7392acb7224e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_methods_classModel"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classModel')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classModel.html">Model</a></td></tr>
-<tr class="memitem:a44419a930e8b1aa29cd9b88dcc49662c inherit pro_methods_classModel"><td class="memItemLeft" align="right" valign="top"><a id="a44419a930e8b1aa29cd9b88dcc49662c"></a>
-ADVec&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classModel.html#a44419a930e8b1aa29cd9b88dcc49662c">x_t</a> (int t, const ADVec &amp;vars)</td></tr>
-<tr class="memdesc:a44419a930e8b1aa29cd9b88dcc49662c inherit pro_methods_classModel"><td class="mdescLeft">&#160;</td><td class="mdescRight">Helper function to extract x(t) from vars. <br /></td></tr>
-<tr class="separator:a44419a930e8b1aa29cd9b88dcc49662c inherit pro_methods_classModel"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a406808d9be1261de0942ed4e4d794271 inherit pro_methods_classModel"><td class="memItemLeft" align="right" valign="top"><a id="a406808d9be1261de0942ed4e4d794271"></a>
-ADVec&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classModel.html#a406808d9be1261de0942ed4e4d794271">u_t</a> (int t, const ADVec &amp;vars)</td></tr>
-<tr class="memdesc:a406808d9be1261de0942ed4e4d794271 inherit pro_methods_classModel"><td class="mdescLeft">&#160;</td><td class="mdescRight">Helper function to extract u(t) from vars. <br /></td></tr>
-<tr class="separator:a406808d9be1261de0942ed4e4d794271 inherit pro_methods_classModel"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1778b5ed2a8d6fc6ab9e6e90a6ece590 inherit pro_methods_classModel"><td class="memTemplParams" colspan="2"><a id="a1778b5ed2a8d6fc6ab9e6e90a6ece590"></a>
+template&lt;typename Vector &gt; </td></tr>
+<tr class="memitem:a1778b5ed2a8d6fc6ab9e6e90a6ece590 inherit pro_methods_classModel"><td class="memTemplItemLeft" align="right" valign="top">Vector&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classModel.html#a1778b5ed2a8d6fc6ab9e6e90a6ece590">x_t</a> (int t, const Vector &amp;vars)</td></tr>
+<tr class="memdesc:a1778b5ed2a8d6fc6ab9e6e90a6ece590 inherit pro_methods_classModel"><td class="mdescLeft">&#160;</td><td class="mdescRight">Helper function to extract x(t) from vars. <br /></td></tr>
+<tr class="separator:a1778b5ed2a8d6fc6ab9e6e90a6ece590 inherit pro_methods_classModel"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2e0937c8d3f5b62cf90ced25903c38d1 inherit pro_methods_classModel"><td class="memTemplParams" colspan="2"><a id="a2e0937c8d3f5b62cf90ced25903c38d1"></a>
+template&lt;typename Vector &gt; </td></tr>
+<tr class="memitem:a2e0937c8d3f5b62cf90ced25903c38d1 inherit pro_methods_classModel"><td class="memTemplItemLeft" align="right" valign="top">Vector&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classModel.html#a2e0937c8d3f5b62cf90ced25903c38d1">u_t</a> (int t, const Vector &amp;vars)</td></tr>
+<tr class="memdesc:a2e0937c8d3f5b62cf90ced25903c38d1 inherit pro_methods_classModel"><td class="mdescLeft">&#160;</td><td class="mdescRight">Helper function to extract u(t) from vars. <br /></td></tr>
+<tr class="separator:a2e0937c8d3f5b62cf90ced25903c38d1 inherit pro_methods_classModel"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
+Protected Attributes</h2></td></tr>
+<tr class="memitem:a63db3108808278d117c90c46f1e5a8ef"><td class="memItemLeft" align="right" valign="top"><a id="a63db3108808278d117c90c46f1e5a8ef"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><b>dt_</b></td></tr>
+<tr class="separator:a63db3108808278d117c90c46f1e5a8ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a834c3c01ffd9c860456d22932529d24f"><td class="memItemLeft" align="right" valign="top"><a id="a834c3c01ffd9c860456d22932529d24f"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBikeModel.html#a834c3c01ffd9c860456d22932529d24f">vref_</a></td></tr>
+<tr class="memdesc:a834c3c01ffd9c860456d22932529d24f"><td class="mdescLeft">&#160;</td><td class="mdescRight">&gt;sampling time dt <br /></td></tr>
+<tr class="separator:a834c3c01ffd9c860456d22932529d24f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aad97836300d513f5743498d62f47e08a"><td class="memItemLeft" align="right" valign="top"><a id="aad97836300d513f5743498d62f47e08a"></a>
+VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBikeModel.html#aad97836300d513f5743498d62f47e08a">coeffs_</a></td></tr>
+<tr class="memdesc:aad97836300d513f5743498d62f47e08a"><td class="mdescLeft">&#160;</td><td class="mdescRight">&gt;reference velocity <br /></td></tr>
+<tr class="separator:aad97836300d513f5743498d62f47e08a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a50a07eee90bb82d227f63dcdf07f036c"><td class="memItemLeft" align="right" valign="top"><a id="a50a07eee90bb82d227f63dcdf07f036c"></a>
+const double&#160;</td><td class="memItemRight" valign="bottom"><b>Lf_</b> = 2.67</td></tr>
+<tr class="separator:a50a07eee90bb82d227f63dcdf07f036c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_classModel"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classModel')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classModel.html">Model</a></td></tr>
 <tr class="memitem:aa6c6273a32932807a0493a4bbbddc3ac inherit pro_attribs_classModel"><td class="memItemLeft" align="right" valign="top"><a id="aa6c6273a32932807a0493a4bbbddc3ac"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>N_</b></td></tr>
@@ -162,6 +220,8 @@ vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class=
 </blockquote>
 <br /></td></tr>
 <tr class="separator:a9ae228c1b5463523cf3f3a844ec7ffc5 inherit pro_attribs_classModel"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa44a513ae9e81e8d3ed3e2add680367f inherit pro_attribs_classModel"><td class="memItemLeft" align="right" valign="top">vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classModel.html#aa44a513ae9e81e8d3ed3e2add680367f">trajectory_</a></td></tr>
+<tr class="separator:aa44a513ae9e81e8d3ed3e2add680367f inherit pro_attribs_classModel"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p class="">Implementation of simple bike model used for direct NLP. The cost function parameters were taken from someone's solution online just to debug things, will tune them more substantially later. </p>

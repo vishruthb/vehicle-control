@@ -81,7 +81,8 @@ Inheritance diagram for Model:</div>
  <div class="center">
   <img src="classModel.png" usemap="#Model_map" alt=""/>
   <map id="Model_map" name="Model_map">
-<area href="classBikeModel.html" title="Implementation of simple bike model used for direct NLP. The cost function parameters were taken from..." alt="BikeModel" shape="rect" coords="0,56,71,80"/>
+<area href="classBikeModel.html" title="Implementation of simple bike model used for direct NLP. The cost function parameters were taken from..." alt="BikeModel" shape="rect" coords="0,56,109,80"/>
+<area href="classSeqLinBikeModel.html" alt="SeqLinBikeModel" shape="rect" coords="0,112,109,136"/>
 </map>
  </div></div>
 <table class="memberdecls">
@@ -90,8 +91,13 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a5a1534764960064921f2823621a1dddb"><td class="memItemLeft" align="right" valign="top"><a id="a5a1534764960064921f2823621a1dddb"></a>
 typedef&#160;</td><td class="memItemRight" valign="bottom"><b>CPPAD_TESTVECTOR</b> (AD&lt; double &gt;) ADvector</td></tr>
 <tr class="separator:a5a1534764960064921f2823621a1dddb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae594ebc83ab169fcccda2c9e238c0d90"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classModel.html#ae594ebc83ab169fcccda2c9e238c0d90">Model</a> (int <a class="el" href="classModel.html#aca776f8a10906afa8a5c362034727921">N</a>, int <a class="el" href="classModel.html#a951f42de158e872b5affece79521b968">nx</a>, int <a class="el" href="classModel.html#a0afbb992dab28ae89f1b0b114d65689c">nu</a>, int delay)</td></tr>
-<tr class="separator:ae594ebc83ab169fcccda2c9e238c0d90"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa480bf5dbdbf89e5221ab1aef113ece0"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classModel.html#aa480bf5dbdbf89e5221ab1aef113ece0">Model</a> (int <a class="el" href="classModel.html#aca776f8a10906afa8a5c362034727921">N</a>, int <a class="el" href="classModel.html#a951f42de158e872b5affece79521b968">nx</a>, int <a class="el" href="classModel.html#a0afbb992dab28ae89f1b0b114d65689c">nu</a>, int delay, const vector&lt; double &gt; &amp;trajectory={})</td></tr>
+<tr class="separator:aa480bf5dbdbf89e5221ab1aef113ece0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a98b6f05729855e93672272f5a9763566"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classModel.html#a98b6f05729855e93672272f5a9763566">set_trajectory</a> (vector&lt; double &gt; &amp;trajectory)</td></tr>
+<tr class="separator:a98b6f05729855e93672272f5a9763566"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a13639c921a1b81ae17f349bf866deb9d"><td class="memItemLeft" align="right" valign="top"><a id="a13639c921a1b81ae17f349bf866deb9d"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>initialized</b> ()</td></tr>
+<tr class="separator:a13639c921a1b81ae17f349bf866deb9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a206c5adc8789eed1598f61be030247af"><td class="memItemLeft" align="right" valign="top"><a id="a206c5adc8789eed1598f61be030247af"></a>
 vector&lt; int &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classModel.html#a206c5adc8789eed1598f61be030247af">starts</a> ()</td></tr>
 <tr class="memdesc:a206c5adc8789eed1598f61be030247af"><td class="mdescLeft">&#160;</td><td class="mdescRight">returns reference to starts vector <br /></td></tr>
@@ -117,8 +123,9 @@ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:aeae66d77dcacb0121cf68f268f1d05c7"><td class="memItemLeft" align="right" valign="top">virtual AD&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classModel.html#aeae66d77dcacb0121cf68f268f1d05c7">Cost</a> (int t, const ADVec &amp;xt, const ADVec &amp;ut, const ADVec &amp;utp1)=0</td></tr>
-<tr class="memdesc:aeae66d77dcacb0121cf68f268f1d05c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pure virtual function: should return per-stage cost.  <a href="#aeae66d77dcacb0121cf68f268f1d05c7">More...</a><br /></td></tr>
+<tr class="memitem:aeae66d77dcacb0121cf68f268f1d05c7"><td class="memItemLeft" align="right" valign="top"><a id="aeae66d77dcacb0121cf68f268f1d05c7"></a>
+virtual AD&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classModel.html#aeae66d77dcacb0121cf68f268f1d05c7">Cost</a> (int t, const ADVec &amp;xt, const ADVec &amp;ut, const ADVec &amp;utp1)=0</td></tr>
+<tr class="memdesc:aeae66d77dcacb0121cf68f268f1d05c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pure virtual function: should return per-stage cost. <br /></td></tr>
 <tr class="separator:aeae66d77dcacb0121cf68f268f1d05c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7572e6d1528397d7caa2c55291fc7527"><td class="memItemLeft" align="right" valign="top"><a id="a7572e6d1528397d7caa2c55291fc7527"></a>
 virtual AD&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classModel.html#a7572e6d1528397d7caa2c55291fc7527">TerminalCost</a> (const ADVec &amp;xN)=0</td></tr>
@@ -128,14 +135,16 @@ virtual AD&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a
 virtual ADVec&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classModel.html#a784c4ed8ec188f4a50094057472e2fc3">DynamicsF</a> (int t, const ADVec &amp;xt, const ADVec &amp;ut)=0</td></tr>
 <tr class="memdesc:a784c4ed8ec188f4a50094057472e2fc3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pure virtual function: should return x(t+1) = f(x(t),u(t)) <br /></td></tr>
 <tr class="separator:a784c4ed8ec188f4a50094057472e2fc3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a44419a930e8b1aa29cd9b88dcc49662c"><td class="memItemLeft" align="right" valign="top"><a id="a44419a930e8b1aa29cd9b88dcc49662c"></a>
-ADVec&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classModel.html#a44419a930e8b1aa29cd9b88dcc49662c">x_t</a> (int t, const ADVec &amp;vars)</td></tr>
-<tr class="memdesc:a44419a930e8b1aa29cd9b88dcc49662c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Helper function to extract x(t) from vars. <br /></td></tr>
-<tr class="separator:a44419a930e8b1aa29cd9b88dcc49662c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a406808d9be1261de0942ed4e4d794271"><td class="memItemLeft" align="right" valign="top"><a id="a406808d9be1261de0942ed4e4d794271"></a>
-ADVec&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classModel.html#a406808d9be1261de0942ed4e4d794271">u_t</a> (int t, const ADVec &amp;vars)</td></tr>
-<tr class="memdesc:a406808d9be1261de0942ed4e4d794271"><td class="mdescLeft">&#160;</td><td class="mdescRight">Helper function to extract u(t) from vars. <br /></td></tr>
-<tr class="separator:a406808d9be1261de0942ed4e4d794271"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1778b5ed2a8d6fc6ab9e6e90a6ece590"><td class="memTemplParams" colspan="2"><a id="a1778b5ed2a8d6fc6ab9e6e90a6ece590"></a>
+template&lt;typename Vector &gt; </td></tr>
+<tr class="memitem:a1778b5ed2a8d6fc6ab9e6e90a6ece590"><td class="memTemplItemLeft" align="right" valign="top">Vector&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classModel.html#a1778b5ed2a8d6fc6ab9e6e90a6ece590">x_t</a> (int t, const Vector &amp;vars)</td></tr>
+<tr class="memdesc:a1778b5ed2a8d6fc6ab9e6e90a6ece590"><td class="mdescLeft">&#160;</td><td class="mdescRight">Helper function to extract x(t) from vars. <br /></td></tr>
+<tr class="separator:a1778b5ed2a8d6fc6ab9e6e90a6ece590"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2e0937c8d3f5b62cf90ced25903c38d1"><td class="memTemplParams" colspan="2"><a id="a2e0937c8d3f5b62cf90ced25903c38d1"></a>
+template&lt;typename Vector &gt; </td></tr>
+<tr class="memitem:a2e0937c8d3f5b62cf90ced25903c38d1"><td class="memTemplItemLeft" align="right" valign="top">Vector&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classModel.html#a2e0937c8d3f5b62cf90ced25903c38d1">u_t</a> (int t, const Vector &amp;vars)</td></tr>
+<tr class="memdesc:a2e0937c8d3f5b62cf90ced25903c38d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Helper function to extract u(t) from vars. <br /></td></tr>
+<tr class="separator:a2e0937c8d3f5b62cf90ced25903c38d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
@@ -170,12 +179,14 @@ vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class=
 </blockquote>
 <br /></td></tr>
 <tr class="separator:a9ae228c1b5463523cf3f3a844ec7ffc5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa44a513ae9e81e8d3ed3e2add680367f"><td class="memItemLeft" align="right" valign="top">vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classModel.html#aa44a513ae9e81e8d3ed3e2add680367f">trajectory_</a></td></tr>
+<tr class="separator:aa44a513ae9e81e8d3ed3e2add680367f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p class="">Base <a class="el" href="classModel.html" title="Base Model Class. Takes care of all of the low-level details needed to implement the cost function,...">Model</a> Class. Takes care of all of the low-level details needed to implement the cost function, dynamics. Derive from this class and override the pure virtual functions Cost(t,x(t),u(t),u(t+1)), TerminalCost(x(N)), and DynamicsF(t,x(t),u(t));. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="ae594ebc83ab169fcccda2c9e238c0d90"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae594ebc83ab169fcccda2c9e238c0d90">&#9670;&nbsp;</a></span>Model()</h2>
+<a id="aa480bf5dbdbf89e5221ab1aef113ece0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa480bf5dbdbf89e5221ab1aef113ece0">&#9670;&nbsp;</a></span>Model()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -205,7 +216,13 @@ vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class=
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>delay</em>&#160;</td>
+          <td class="paramname"><em>delay</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const vector&lt; double &gt; &amp;&#160;</td>
+          <td class="paramname"><em>trajectory</em> = <code>{}</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -224,59 +241,6 @@ vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class=
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="aeae66d77dcacb0121cf68f268f1d05c7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aeae66d77dcacb0121cf68f268f1d05c7">&#9670;&nbsp;</a></span>Cost()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual AD&lt;double&gt; Model::Cost </td>
-          <td>(</td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>t</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const ADVec &amp;&#160;</td>
-          <td class="paramname"><em>xt</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const ADVec &amp;&#160;</td>
-          <td class="paramname"><em>ut</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const ADVec &amp;&#160;</td>
-          <td class="paramname"><em>utp1</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">pure virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Pure virtual function: should return per-stage cost. </p>
-<blockquote class="doxtable">
-<p class="">bookkeeping vector: starts_[i] says where in optimization vector vars component i (either a scalar state or input) </p>
-</blockquote>
-
-</div>
-</div>
 <a id="a138487dfb01ab6af0856c493f20ad179"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a138487dfb01ab6af0856c493f20ad179">&#9670;&nbsp;</a></span>operator()()</h2>
 
@@ -311,6 +275,33 @@ vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class=
 </table>
 </div><div class="memdoc">
 <p class="">Functor operator that is called by IpOPT. This implements the low level details </p>
+
+</div>
+</div>
+<a id="a98b6f05729855e93672272f5a9763566"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a98b6f05729855e93672272f5a9763566">&#9670;&nbsp;</a></span>set_trajectory()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Model::set_trajectory </td>
+          <td>(</td>
+          <td class="paramtype">vector&lt; double &gt; &amp;&#160;</td>
+          <td class="paramname"><em>trajectory</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p class="">Called by <a class="el" href="classMPC.html" title="Base MPC class. Whereas the model that you pass in takes care of specifying the dynamics and the cost...">MPC</a> to set <a class="el" href="classModel.html" title="Base Model Class. Takes care of all of the low-level details needed to implement the cost function,...">Model</a>'s trajectory_ to <a class="el" href="classMPC.html" title="Base MPC class. Whereas the model that you pass in takes care of specifying the dynamics and the cost...">MPC</a>'s warmstart_, where the latter term is teh solution to the previous <a class="el" href="classMPC.html" title="Base MPC class. Whereas the model that you pass in takes care of specifying the dynamics and the cost...">MPC</a> run </p>
 
 </div>
 </div>
@@ -367,6 +358,32 @@ vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class=
 <p class="">Needed to plot <a class="el" href="classMPC.html" title="Base MPC class. Whereas the model that you pass in takes care of specifying the dynamics and the cost...">MPC</a> planned trajectory in simulator: should return starts_[Y], where Y specifies the the position of X in the the state vector. e.g. if state[1] = y, then xstart shoudl return starts_[1]; </p>
 
 <p>Implemented in <a class="el" href="classBikeModel.html#a05b988f106df902d1222dfb662d4b1fa">BikeModel</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="aa44a513ae9e81e8d3ed3e2add680367f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa44a513ae9e81e8d3ed3e2add680367f">&#9670;&nbsp;</a></span>trajectory_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">vector&lt;double&gt; Model::trajectory_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<blockquote class="doxtable">
+<p class="">bookkeeping vector: starts_[i] says where in optimization vector vars component i (either a scalar state or input) </p>
+</blockquote>
 
 </div>
 </div>
