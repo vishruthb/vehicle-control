@@ -100,8 +100,7 @@ private:
       return BikeModel::DynamicsF(t, xt, ut);
     }
 
-    // if t=0, we use the measured state x(0) = x0 to initialize,
-    // otherwise, we use shifted trjaectory
+    // get one step shfited x0,u0 to linearize about
     vector<double> x0 = x_t(t + 1, trajectory_);
     vector<double> u0 = u_t(t + 1, trajectory_);
 

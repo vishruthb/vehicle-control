@@ -93,19 +93,23 @@ int main() {
 
   Bounds bounds;
 
+  // no bounds on state
   bounds.x_up_ = vector<double>(6, 1e19);
-
   bounds.x_low_ = vector<double>(6, -1e19);
 
+  // can only turn 25deg either way, and accel is limited inside of +/- 1
   bounds.u_up_ = vector<double>{deg2rad(25), 1};
   bounds.u_low_ = vector<double>{-1 * deg2rad(25), -1};
 
   // MPC is initialized here!
-  SeqLinBikeModel bike_model(10, 6, 2, 1, 0.1, 70);
+  // Sequential linearized bicycle model
+  BikeModel bike_model(10, 6, 2, 1, 0.1, 70);
   Model &model = bike_model;
 
-  SeqLinMPC mpc(10, model, 10 * 6 + 9 * 2, 10 * 6, bounds);
+  // MPC solver implementing sequential linearization
+  MPC mpc(10, model, 10 * 6 + 9 * 2, 10 * 6, bounds);
 
+  // talk to the Unit3d simulator
   h.onMessage([&mpc, &bike_model](uWS::WebSocket<uWS::SERVER> ws, char *data,
                                   size_t length, uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
@@ -130,7 +134,7 @@ int main() {
           /*
            * TODO: Calculate steering angle and throttle using MPC.
            *
-           * Both are in between [-1, 1].
+           * Both are in between [-1, 1];
            *
            */
 

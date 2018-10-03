@@ -13,6 +13,10 @@ using Eigen::VectorXd;
 void MPC::SetupWarmStart(Dvector &vars, const VectorXd &state) {
   // warm start using previous solution, if it exists
   if (warmstart_.size()) {
+    // set x_old[1] = x0, so that x[0] is warmstarted to x[0].
+    for (int i = 0; i < model_.nx(); i++) {
+      warmstart_[starts_[i] + 1] = state[i];
+    }
     // warm start x[t] = x_old[t+1] u[t] = u_old[t+1] for t<N-2
     for (int t = 0; t < N_ - 2; t++) {
       for (int i = 0; i < starts_.size(); i++) {
@@ -162,8 +166,8 @@ vector<double> MPC::Solve(const VectorXd &state, const VectorXd &coeffs) {
 
   } else {
     // if we get an infeasible solution, use last feasible one shifted by one
-    // TODO: this no longer makes sense after if we get mroe than one infeasible
-    // solution in a row
+    // TODO: this is shit, need to fix. no longer makes sense after if we get
+    // more than one infeasible solution in a row
     assert(warmstart_.size() && "First iteration infeasible");
     ProcessSolution(result, warmstart_, 1);
   }
