@@ -30,7 +30,7 @@ private:
     AD<double> ddel = ut[DELTA] - d0;
 
     // take quadratic approximation to BikeModel's non-convex term
-    cost += 250 * (2 * v0 * v0 * d0 * ddel + v0 * v0 * CppAD::pow(ddel, 2) +
+    cost += 350 * (2 * v0 * v0 * d0 * ddel + v0 * v0 * CppAD::pow(ddel, 2) +
                    2 * v0 * d0 * d0 * dv + 2 * v0 * d0 * dv * ddel +
                    d0 * d0 * CppAD::pow(dv, 2));
 

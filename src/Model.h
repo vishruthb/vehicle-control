@@ -116,7 +116,6 @@ public:
     fg[0] += TerminalCost(x_t(N_ - 1, vars));
 
     // set the constraint used to enforce x(0) = x0
-    ADVec x0 = x_t(0, vars);
     for (int i = 0; i < nx_; ++i)
       fg[1 + starts_[i]] = vars[starts_[i]];
 
