@@ -103,7 +103,7 @@ int main() {
 
   // MPC is initialized here!
   // Sequential linearized bicycle model
-  BikeModel bike_model(10, 6, 2, 1, 0.1, 70);
+  SeqLinBikeModel bike_model(10, 6, 2, 1, 0.1, 70);
   Model &model = bike_model;
 
   // MPC solver implementing sequential linearization
