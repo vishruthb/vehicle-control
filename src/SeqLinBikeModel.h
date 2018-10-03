@@ -57,13 +57,17 @@ private:
 
     Eigen::Matrix<double, 6, 6> A;
 
+    double df = coeffs_[1] + coeffs_[2] * x + coeffs_[3] * x * x;
+    double d2f = 2 * coeffs_[2] + 6 * coeffs_[3] * x;
+    double dpsides = -d2f / (1 + df * df);
+
     // compute jacobian wrt to x and evaluate at xt, ut
-    A << 1, 0, (-v * sin(psi) * dt_), (cos(psi) * dt_), 0, 0,  //
-        0, 1, (v * cos(psi) * dt_), (sin(psi) * dt_), 0, 0,    //
-        0, 0, 1, (-1 / Lf_ * delta * dt_), 0, 0,               //
-        0, 0, 0, 1, 0, 0,                                      //
-        0, -1, 0, (sin(epsi) * dt_), 0, (v * cos(epsi) * dt_), //
-        0, 0, 1, (-1 / Lf_ * delta * dt_), 0, 0;
+    A << 1, 0, (-v * sin(psi) * dt_), (cos(psi) * dt_), 0, 0,   //
+        0, 1, (v * cos(psi) * dt_), (sin(psi) * dt_), 0, 0,     //
+        0, 0, 1, (-1 / Lf_ * delta * dt_), 0, 0,                //
+        0, 0, 0, 1, 0, 0,                                       //
+        df, -1, 0, (sin(epsi) * dt_), 0, (v * cos(epsi) * dt_), //
+        dpsides, 0, 1, (-1 / Lf_ * delta * dt_), 0, 0;
 
     return A;
   }
@@ -107,13 +111,6 @@ private:
     MatrixXd mA = ComputeA(x0, u0);
     MatrixXd mB = ComputeB(x0, u0);
 
-    AD<double> x = xt[X];
-    AD<double> f = coeffs_[0] + coeffs_[1] * x + coeffs_[2] * CppAD::pow(x, 2) +
-                   coeffs_[3] * CppAD::pow(x, 3);
-
-    AD<double> psides = CppAD::atan(coeffs_[1] + 2 * coeffs_[2] * x +
-                                    3 * coeffs_[3] * CppAD::pow(x, 2));
-
     auto Dot = [](const VectorXd &a, const ADVec &x) {
       AD<double> ax = 0;
       for (int i = 0; i < a.size(); i++)
@@ -122,7 +119,7 @@ private:
     };
 
     ADVec fxtut(nx());
-    double xx = x0[X];
+    double x = x0[X];
     double y = x0[Y];
     double psi = x0[PSI];
     double v = x0[V];
@@ -131,8 +128,14 @@ private:
     double a = u0[A];
     double delta = u0[DELTA];
 
+    AD<double> f = coeffs_[0] + coeffs_[1] * x + coeffs_[2] * CppAD::pow(x, 2) +
+                   coeffs_[3] * CppAD::pow(x, 3);
+
+    AD<double> psides = CppAD::atan(coeffs_[1] + 2 * coeffs_[2] * x +
+                                    3 * coeffs_[3] * CppAD::pow(x, 2));
+
     // first add term contributed from linearization point
-    fxtut[X] = xx + v * cos(psi) * dt_;
+    fxtut[X] = x + v * cos(psi) * dt_;
     fxtut[Y] = y + v * sin(psi) * dt_;
     fxtut[PSI] = psi - v / Lf_ * delta * dt_;
     fxtut[V] = v + a * dt_;
