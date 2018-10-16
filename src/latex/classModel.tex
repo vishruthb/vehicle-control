@@ -12,7 +12,7 @@ Base \mbox{\hyperlink{classModel}{Model}} Class. Takes care of all of the low-\/
 Inheritance diagram for Model\+:\begin{figure}[H]
 \begin{center}
 \leavevmode
-\includegraphics[height=2.000000cm]{classModel}
+\includegraphics[height=3.000000cm]{classModel}
 \end{center}
 \end{figure}
 \subsection*{Public Member Functions}
@@ -21,7 +21,12 @@ Inheritance diagram for Model\+:\begin{figure}[H]
 \mbox{\Hypertarget{classModel_a5a1534764960064921f2823621a1dddb}\label{classModel_a5a1534764960064921f2823621a1dddb}} 
 typedef {\bfseries C\+P\+P\+A\+D\+\_\+\+T\+E\+S\+T\+V\+E\+C\+T\+OR} (AD$<$ double $>$) A\+Dvector
 \item 
-\mbox{\hyperlink{classModel_ae594ebc83ab169fcccda2c9e238c0d90}{Model}} (int \mbox{\hyperlink{classModel_aca776f8a10906afa8a5c362034727921}{N}}, int \mbox{\hyperlink{classModel_a951f42de158e872b5affece79521b968}{nx}}, int \mbox{\hyperlink{classModel_a0afbb992dab28ae89f1b0b114d65689c}{nu}}, int delay)
+\mbox{\hyperlink{classModel_aa480bf5dbdbf89e5221ab1aef113ece0}{Model}} (int \mbox{\hyperlink{classModel_aca776f8a10906afa8a5c362034727921}{N}}, int \mbox{\hyperlink{classModel_a951f42de158e872b5affece79521b968}{nx}}, int \mbox{\hyperlink{classModel_a0afbb992dab28ae89f1b0b114d65689c}{nu}}, int delay, const vector$<$ double $>$ \&trajectory=\{\})
+\item 
+void \mbox{\hyperlink{classModel_a98b6f05729855e93672272f5a9763566}{set\+\_\+trajectory}} (vector$<$ double $>$ \&trajectory)
+\item 
+\mbox{\Hypertarget{classModel_a13639c921a1b81ae17f349bf866deb9d}\label{classModel_a13639c921a1b81ae17f349bf866deb9d}} 
+bool {\bfseries initialized} ()
 \item 
 \mbox{\Hypertarget{classModel_a206c5adc8789eed1598f61be030247af}\label{classModel_a206c5adc8789eed1598f61be030247af}} 
 vector$<$ int $>$ \& \mbox{\hyperlink{classModel_a206c5adc8789eed1598f61be030247af}{starts}} ()
@@ -44,6 +49,7 @@ void \mbox{\hyperlink{classModel_a138487dfb01ab6af0856c493f20ad179}{operator()}}
 \subsection*{Protected Member Functions}
 \begin{DoxyCompactItemize}
 \item 
+\mbox{\Hypertarget{classModel_aeae66d77dcacb0121cf68f268f1d05c7}\label{classModel_aeae66d77dcacb0121cf68f268f1d05c7}} 
 virtual AD$<$ double $>$ \mbox{\hyperlink{classModel_aeae66d77dcacb0121cf68f268f1d05c7}{Cost}} (int t, const A\+D\+Vec \&xt, const A\+D\+Vec \&ut, const A\+D\+Vec \&utp1)=0
 \begin{DoxyCompactList}\small\item\em Pure virtual function\+: should return per-\/stage cost. \end{DoxyCompactList}\item 
 \mbox{\Hypertarget{classModel_a7572e6d1528397d7caa2c55291fc7527}\label{classModel_a7572e6d1528397d7caa2c55291fc7527}} 
@@ -52,11 +58,11 @@ virtual AD$<$ double $>$ \mbox{\hyperlink{classModel_a7572e6d1528397d7caa2c55291
 \mbox{\Hypertarget{classModel_a784c4ed8ec188f4a50094057472e2fc3}\label{classModel_a784c4ed8ec188f4a50094057472e2fc3}} 
 virtual A\+D\+Vec \mbox{\hyperlink{classModel_a784c4ed8ec188f4a50094057472e2fc3}{DynamicsF}} (int t, const A\+D\+Vec \&xt, const A\+D\+Vec \&ut)=0
 \begin{DoxyCompactList}\small\item\em Pure virtual function\+: should return x(t+1) = f(x(t),u(t)) \end{DoxyCompactList}\item 
-\mbox{\Hypertarget{classModel_a44419a930e8b1aa29cd9b88dcc49662c}\label{classModel_a44419a930e8b1aa29cd9b88dcc49662c}} 
-A\+D\+Vec \mbox{\hyperlink{classModel_a44419a930e8b1aa29cd9b88dcc49662c}{x\+\_\+t}} (int t, const A\+D\+Vec \&vars)
+\mbox{\Hypertarget{classModel_a1778b5ed2a8d6fc6ab9e6e90a6ece590}\label{classModel_a1778b5ed2a8d6fc6ab9e6e90a6ece590}} 
+{\footnotesize template$<$typename Vector $>$ }\\Vector \mbox{\hyperlink{classModel_a1778b5ed2a8d6fc6ab9e6e90a6ece590}{x\+\_\+t}} (int t, const Vector \&vars)
 \begin{DoxyCompactList}\small\item\em Helper function to extract x(t) from vars. \end{DoxyCompactList}\item 
-\mbox{\Hypertarget{classModel_a406808d9be1261de0942ed4e4d794271}\label{classModel_a406808d9be1261de0942ed4e4d794271}} 
-A\+D\+Vec \mbox{\hyperlink{classModel_a406808d9be1261de0942ed4e4d794271}{u\+\_\+t}} (int t, const A\+D\+Vec \&vars)
+\mbox{\Hypertarget{classModel_a2e0937c8d3f5b62cf90ced25903c38d1}\label{classModel_a2e0937c8d3f5b62cf90ced25903c38d1}} 
+{\footnotesize template$<$typename Vector $>$ }\\Vector \mbox{\hyperlink{classModel_a2e0937c8d3f5b62cf90ced25903c38d1}{u\+\_\+t}} (int t, const Vector \&vars)
 \begin{DoxyCompactList}\small\item\em Helper function to extract u(t) from vars. \end{DoxyCompactList}\end{DoxyCompactItemize}
 \subsection*{Protected Attributes}
 \begin{DoxyCompactItemize}
@@ -83,41 +89,37 @@ input dimension\end{quote}
 vector$<$ int $>$ \mbox{\hyperlink{classModel_a9ae228c1b5463523cf3f3a844ec7ffc5}{starts\+\_\+}}
 \begin{DoxyCompactList}\small\item\em \begin{quote}
 input delay\+: x(t+1) = f(x(t),u(t-\/delay\+\_\+))\end{quote}
-\end{DoxyCompactList}\end{DoxyCompactItemize}
+\end{DoxyCompactList}\item 
+vector$<$ double $>$ \mbox{\hyperlink{classModel_aa44a513ae9e81e8d3ed3e2add680367f}{trajectory\+\_\+}}
+\end{DoxyCompactItemize}
 
 
 \subsection{Detailed Description}
 Base \mbox{\hyperlink{classModel}{Model}} Class. Takes care of all of the low-\/level details needed to implement the cost function, dynamics. Derive from this class and override the pure virtual functions Cost(t,x(t),u(t),u(t+1)), Terminal\+Cost(x(\+N)), and DynamicsF(t,x(t),u(t));. 
 
 \subsection{Constructor \& Destructor Documentation}
-\mbox{\Hypertarget{classModel_ae594ebc83ab169fcccda2c9e238c0d90}\label{classModel_ae594ebc83ab169fcccda2c9e238c0d90}} 
+\mbox{\Hypertarget{classModel_aa480bf5dbdbf89e5221ab1aef113ece0}\label{classModel_aa480bf5dbdbf89e5221ab1aef113ece0}} 
 \index{Model@{Model}!Model@{Model}}
 \index{Model@{Model}!Model@{Model}}
 \subsubsection{\texorpdfstring{Model()}{Model()}}
-{\footnotesize\ttfamily Model\+::\+Model (\begin{DoxyParamCaption}\item[{int}]{N,  }\item[{int}]{nx,  }\item[{int}]{nu,  }\item[{int}]{delay }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+{\footnotesize\ttfamily Model\+::\+Model (\begin{DoxyParamCaption}\item[{int}]{N,  }\item[{int}]{nx,  }\item[{int}]{nu,  }\item[{int}]{delay,  }\item[{const vector$<$ double $>$ \&}]{trajectory = {\ttfamily \{\}} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
 
 Establishes opitmization horizon (N), state-\/dim (nx), input-\/dim (nu), input delay (delay), and populates bookkeeping vector starts\+\_\+ 
 
 \subsection{Member Function Documentation}
-\mbox{\Hypertarget{classModel_aeae66d77dcacb0121cf68f268f1d05c7}\label{classModel_aeae66d77dcacb0121cf68f268f1d05c7}} 
-\index{Model@{Model}!Cost@{Cost}}
-\index{Cost@{Cost}!Model@{Model}}
-\subsubsection{\texorpdfstring{Cost()}{Cost()}}
-{\footnotesize\ttfamily virtual AD$<$double$>$ Model\+::\+Cost (\begin{DoxyParamCaption}\item[{int}]{t,  }\item[{const A\+D\+Vec \&}]{xt,  }\item[{const A\+D\+Vec \&}]{ut,  }\item[{const A\+D\+Vec \&}]{utp1 }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}, {\ttfamily [pure virtual]}}
-
-
-
-Pure virtual function\+: should return per-\/stage cost. 
-
-\begin{quote}
-bookkeeping vector\+: starts\+\_\+\mbox{[}i\mbox{]} says where in optimization vector vars component i (either a scalar state or input) \end{quote}
 \mbox{\Hypertarget{classModel_a138487dfb01ab6af0856c493f20ad179}\label{classModel_a138487dfb01ab6af0856c493f20ad179}} 
 \index{Model@{Model}!operator()@{operator()}}
 \index{operator()@{operator()}!Model@{Model}}
 \subsubsection{\texorpdfstring{operator()()}{operator()()}}
 {\footnotesize\ttfamily void Model\+::operator() (\begin{DoxyParamCaption}\item[{A\+D\+Vec \&}]{fg,  }\item[{const A\+D\+Vec \&}]{vars }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
 
-Functor operator that is called by Ip\+O\+PT. This implements the low level details \mbox{\Hypertarget{classModel_ab98f8c18036d9bada533325300865c5e}\label{classModel_ab98f8c18036d9bada533325300865c5e}} 
+Functor operator that is called by Ip\+O\+PT. This implements the low level details \mbox{\Hypertarget{classModel_a98b6f05729855e93672272f5a9763566}\label{classModel_a98b6f05729855e93672272f5a9763566}} 
+\index{Model@{Model}!set\+\_\+trajectory@{set\+\_\+trajectory}}
+\index{set\+\_\+trajectory@{set\+\_\+trajectory}!Model@{Model}}
+\subsubsection{\texorpdfstring{set\+\_\+trajectory()}{set\_trajectory()}}
+{\footnotesize\ttfamily void Model\+::set\+\_\+trajectory (\begin{DoxyParamCaption}\item[{vector$<$ double $>$ \&}]{trajectory }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Called by \mbox{\hyperlink{classMPC}{M\+PC}} to set \mbox{\hyperlink{classModel}{Model}}\textquotesingle{}s trajectory\+\_\+ to \mbox{\hyperlink{classMPC}{M\+PC}}\textquotesingle{}s warmstart\+\_\+, where the latter term is teh solution to the previous \mbox{\hyperlink{classMPC}{M\+PC}} run \mbox{\Hypertarget{classModel_ab98f8c18036d9bada533325300865c5e}\label{classModel_ab98f8c18036d9bada533325300865c5e}} 
 \index{Model@{Model}!xstart@{xstart}}
 \index{xstart@{xstart}!Model@{Model}}
 \subsubsection{\texorpdfstring{xstart()}{xstart()}}
@@ -137,6 +139,17 @@ Needed to plot \mbox{\hyperlink{classMPC}{M\+PC}} planned trajectory in simulato
 
 Implemented in \mbox{\hyperlink{classBikeModel_a05b988f106df902d1222dfb662d4b1fa}{Bike\+Model}}.
 
+
+
+\subsection{Member Data Documentation}
+\mbox{\Hypertarget{classModel_aa44a513ae9e81e8d3ed3e2add680367f}\label{classModel_aa44a513ae9e81e8d3ed3e2add680367f}} 
+\index{Model@{Model}!trajectory\+\_\+@{trajectory\+\_\+}}
+\index{trajectory\+\_\+@{trajectory\+\_\+}!Model@{Model}}
+\subsubsection{\texorpdfstring{trajectory\+\_\+}{trajectory\_}}
+{\footnotesize\ttfamily vector$<$double$>$ Model\+::trajectory\+\_\+\hspace{0.3cm}{\ttfamily [protected]}}
+
+\begin{quote}
+bookkeeping vector\+: starts\+\_\+\mbox{[}i\mbox{]} says where in optimization vector vars component i (either a scalar state or input) \end{quote}
 
 
 The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}

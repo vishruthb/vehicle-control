@@ -88,34 +88,4 @@ public:
   virtual vector<double> Solve(const VectorXd &state, const VectorXd &ref);
 };
 
-///\brief Almost identical to standard MPC, just needs to update model's
-/// trajectory to be used in linearization step
-/// don't need this anymore!
-class SeqLinMPC : public MPC {
-
-public:
-  SeqLinMPC(size_t N, Model &model, size_t nvars, size_t nconstraints,
-            Bounds bounds)
-      : MPC(N, model, nvars, nconstraints, bounds) {
-    // the model will use the previous solution as a trajectory to linearize
-    // around
-    // model_.set_trajectory(warmstart_);
-  }
-
-  /* virtual vector<double> Solve(const VectorXd &state,
-                               const VectorXd &ref) override {
-    // we use state[1] of warmstart_ to store x0 to be used in seq.
-    // linearization.  This is ugly. but we'll leave it as is for now.
-    if (warmstart_.size()) {
-      //   for (int i = 0; i < model_.nx(); i++)
-      // warmstart_[starts_[i + 1]] = state[i];
-      model_.set_trajectory(warmstart_);
-    }
-    return MPC::Solve(state, ref);
-    }*/
-
-  // model_.set_trajectory(warmstart_);
-  //}
-};
-
 #endif /* MPC_H */

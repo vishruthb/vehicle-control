@@ -8,6 +8,8 @@ using std::sin;
 
 class SeqLinBikeModel : public BikeModel {
 private:
+  /// We take a quadratic approximation to the nonconvex term v^2 delta^2 in
+  /// BikeModel's cost function
   virtual AD<double> Cost(int t, const ADVec &xt, const ADVec &ut,
                           const ADVec &utp1) override {
     if (trajectory_.size() == 0)
@@ -28,7 +30,7 @@ private:
     AD<double> ddel = ut[DELTA] - d0;
 
     // take quadratic approximation to BikeModel's non-convex term
-    cost += 250 * (2 * v0 * v0 * d0 * ddel + v0 * v0 * CppAD::pow(ddel, 2) +
+    cost += 350 * (2 * v0 * v0 * d0 * ddel + v0 * v0 * CppAD::pow(ddel, 2) +
                    2 * v0 * d0 * d0 * dv + 2 * v0 * d0 * dv * ddel +
                    d0 * d0 * CppAD::pow(dv, 2));
 
@@ -37,12 +39,6 @@ private:
 
     return cost;
   }
-  /*
-
-  // ditto
-  virtual AD<double> TerminalCost(const ADVec &xN) override {
-    return BikeModel::TerminalCost(xN);
-    }*/
 
   /// compute jacobian d/dx f(x,u) evaluated at linearization point (x0,u0)
   MatrixXd ComputeA(const vector<double> &x0, const vector<double> &u0) {
@@ -57,13 +53,17 @@ private:
 
     Eigen::Matrix<double, 6, 6> A;
 
+    double df = coeffs_[1] + coeffs_[2] * x + coeffs_[3] * x * x;
+    double d2f = 2 * coeffs_[2] + 6 * coeffs_[3] * x;
+    double dpsides = -d2f / (1 + df * df);
+
     // compute jacobian wrt to x and evaluate at xt, ut
-    A << 1, 0, (-v * sin(psi) * dt_), (cos(psi) * dt_), 0, 0,  //
-        0, 1, (v * cos(psi) * dt_), (sin(psi) * dt_), 0, 0,    //
-        0, 0, 1, (-1 / Lf_ * delta * dt_), 0, 0,               //
-        0, 0, 0, 1, 0, 0,                                      //
-        0, -1, 0, (sin(epsi) * dt_), 0, (v * cos(epsi) * dt_), //
-        0, 0, 1, (-1 / Lf_ * delta * dt_), 0, 0;
+    A << 1, 0, (-v * sin(psi) * dt_), (cos(psi) * dt_), 0, 0,   //
+        0, 1, (v * cos(psi) * dt_), (sin(psi) * dt_), 0, 0,     //
+        0, 0, 1, (-1 / Lf_ * delta * dt_), 0, 0,                //
+        0, 0, 0, 1, 0, 0,                                       //
+        df, -1, 0, (sin(epsi) * dt_), 0, (v * cos(epsi) * dt_), //
+        dpsides, 0, 1, (-1 / Lf_ * delta * dt_), 0, 0;
 
     return A;
   }
@@ -104,25 +104,8 @@ private:
     vector<double> x0 = x_t(t + 1, trajectory_);
     vector<double> u0 = u_t(t + 1, trajectory_);
 
-    MatrixXd mA = ComputeA(x0, u0);
-    MatrixXd mB = ComputeB(x0, u0);
-
-    AD<double> x = xt[X];
-    AD<double> f = coeffs_[0] + coeffs_[1] * x + coeffs_[2] * CppAD::pow(x, 2) +
-                   coeffs_[3] * CppAD::pow(x, 3);
-
-    AD<double> psides = CppAD::atan(coeffs_[1] + 2 * coeffs_[2] * x +
-                                    3 * coeffs_[3] * CppAD::pow(x, 2));
-
-    auto Dot = [](const VectorXd &a, const ADVec &x) {
-      AD<double> ax = 0;
-      for (int i = 0; i < a.size(); i++)
-        ax += a[i] * x[i];
-      return ax;
-    };
-
     ADVec fxtut(nx());
-    double xx = x0[X];
+    double x = x0[X];
     double y = x0[Y];
     double psi = x0[PSI];
     double v = x0[V];
@@ -131,8 +114,14 @@ private:
     double a = u0[A];
     double delta = u0[DELTA];
 
+    AD<double> f = coeffs_[0] + coeffs_[1] * x + coeffs_[2] * CppAD::pow(x, 2) +
+                   coeffs_[3] * CppAD::pow(x, 3);
+
+    AD<double> psides = CppAD::atan(coeffs_[1] + 2 * coeffs_[2] * x +
+                                    3 * coeffs_[3] * CppAD::pow(x, 2));
+
     // first add term contributed from linearization point
-    fxtut[X] = xx + v * cos(psi) * dt_;
+    fxtut[X] = x + v * cos(psi) * dt_;
     fxtut[Y] = y + v * sin(psi) * dt_;
     fxtut[PSI] = psi - v / Lf_ * delta * dt_;
     fxtut[V] = v + a * dt_;
@@ -151,6 +140,16 @@ private:
 
     ADVec dx = diff(xt, x0);
     ADVec du = diff(ut, u0);
+
+    MatrixXd mA = ComputeA(x0, u0);
+    MatrixXd mB = ComputeB(x0, u0);
+
+    auto Dot = [](const VectorXd &a, const ADVec &x) {
+      AD<double> ax = 0;
+      for (int i = 0; i < a.size(); i++)
+        ax += a[i] * x[i];
+      return ax;
+    };
 
     fxtut[X] += Dot(mA.row(X), dx) + Dot(mB.row(X), du);
     fxtut[Y] += Dot(mA.row(Y), dx) + Dot(mB.row(Y), du);

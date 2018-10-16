@@ -74,9 +74,8 @@ public:
       starts_.push_back(starts_[nx_ + i] + N - 1);
   }
 
-  /// this, if called, sets member variable trajectory_.  Currently used by
-  /// SeqLinMPC to store last run's solution, which is what we linearize
-  /// about on the next run
+  /// Called by MPC to set Model's trajectory_ to MPC's warmstart_, where the
+  /// latter term is teh solution to the previous MPC run
   void set_trajectory(vector<double> &trajectory) { trajectory_ = trajectory; }
 
   bool initialized() { return (trajectory_.size() > 0); }
@@ -117,7 +116,6 @@ public:
     fg[0] += TerminalCost(x_t(N_ - 1, vars));
 
     // set the constraint used to enforce x(0) = x0
-    ADVec x0 = x_t(0, vars);
     for (int i = 0; i < nx_; ++i)
       fg[1 + starts_[i]] = vars[starts_[i]];
 
