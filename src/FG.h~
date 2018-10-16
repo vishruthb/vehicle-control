@@ -1,4 +1,0 @@
-class FG {
-public:
-  void operator()(ADVec &fg, const ADVec &vars);
-};

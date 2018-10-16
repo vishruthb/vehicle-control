@@ -16,9 +16,8 @@ using namespace std;
 
 /*! \mainpage
 Code base being developed to interface with the Udacity Unity3d Self-driving car
-simulator (available in my repo:
-https://github.com/nikolaimatni/CppFun/tree/master/SelfDrivingCar).  For now we
-are working with the default MPC track (term 2, project 5), but we will
+simulator (available here: https://github.com/nikolaimatni/SelfDrivingCar).  For
+now we are working with the default MPC track (term 2, project 5), but we will
 ultimately customize.
 
 The basic work flow here is you need to implement a realization of the virtual
@@ -103,29 +102,25 @@ int main() {
   bounds.u_low_ = vector<double>{-1 * deg2rad(25), -1};
 
   // MPC is initialized here!
-  int N = 10;
-  int delay = 1;
-  double dt = .1;
-  double vref = 70;
+  size_t N = 10;
+  size_t nx = 6;
+  size_t nu = 2;
+  int delay = 1;   // measured in dt,
+  double dt = 0.1; // delay * dt * 1000 ms delay imposed below
+  int vref = 70;
 
-  int nx = 6;
-  int nu = 2;
-  
-  // XXX: switch from different models here
-  // Sequential linearized bicycle model
-//   BikeModel bike_model(N, nx, nu, delay, dt, vref);
+  SeqLinBikeModel bike_model(N, nx, nu, delay, dt, vref);
   // Dynamic nonlinear bike model
-  DynBikeModel bike_model(N, nx, nu, delay, dt, vref);
+//   DynBikeModel bike_model(N, nx, nu, delay, dt, vref);
 
   Model &model = bike_model;
   // MPC solver implementing sequential linearization
-  int nvars = N * nx + (N-1) * nu;
-  int nconsts = N * nx;
-  MPC mpc(N, model, nvars, nconsts, bounds);
+  MPC mpc(N, model, N * nx + (N - 1) * nu, N * nx, bounds);
 
   // talk to the Unit3d simulator
-  h.onMessage([&mpc, &bike_model](uWS::WebSocket<uWS::SERVER> ws, char *data,
-                                  size_t length, uWS::OpCode opCode) {
+  h.onMessage([&mpc, &bike_model, dt, delay](uWS::WebSocket<uWS::SERVER> ws,
+                                             char *data, size_t length,
+                                             uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
     // The 2 signifies a websocket event
@@ -287,7 +282,7 @@ int main() {
           //
           // NOTE: REMEMBER TO SET THIS TO 100 MILLISECONDS BEFORE
           // SUBMITTING.
-          this_thread::sleep_for(chrono::milliseconds(100));
+          this_thread::sleep_for(chrono::milliseconds(int(delay * dt * 1000)));
           ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
         }
       } else {

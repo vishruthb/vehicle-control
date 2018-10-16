@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['seqlinmpc',['SeqLinMPC',['../classSeqLinMPC.html',1,'']]]
+  ['seqlinbikemodel',['SeqLinBikeModel',['../classSeqLinBikeModel.html',1,'']]]
 ];
