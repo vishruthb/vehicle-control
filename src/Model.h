@@ -131,6 +131,7 @@ public:
       for (int i = 0; i < nx_; ++i)
         fg[2 + starts_[i] + t] = xtp1[i] - Fxtut[i];
     }
+
   }
   virtual ~Model() {}
 };

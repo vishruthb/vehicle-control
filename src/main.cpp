@@ -2,6 +2,7 @@
 #include "Eigen-3.3/Eigen/QR"
 #include "MPC.h"
 #include "Model.h"
+#include "DynBikeModel.h"
 #include "SeqLinBikeModel.h"
 #include "json.hpp"
 #include <chrono>
@@ -102,12 +103,25 @@ int main() {
   bounds.u_low_ = vector<double>{-1 * deg2rad(25), -1};
 
   // MPC is initialized here!
-  // Sequential linearized bicycle model
-  BikeModel bike_model(10, 6, 2, 1, 0.1, 70);
-  Model &model = bike_model;
+  int N = 10;
+  int delay = 1;
+  double dt = .1;
+  double vref = 70;
 
+  int nx = 6;
+  int nu = 2;
+  
+  // XXX: switch from different models here
+  // Sequential linearized bicycle model
+//   BikeModel bike_model(N, nx, nu, delay, dt, vref);
+  // Dynamic nonlinear bike model
+  DynBikeModel bike_model(N, nx, nu, delay, dt, vref);
+
+  Model &model = bike_model;
   // MPC solver implementing sequential linearization
-  MPC mpc(10, model, 10 * 6 + 9 * 2, 10 * 6, bounds);
+  int nvars = N * nx + (N-1) * nu;
+  int nconsts = N * nx;
+  MPC mpc(N, model, nvars, nconsts, bounds);
 
   // talk to the Unit3d simulator
   h.onMessage([&mpc, &bike_model](uWS::WebSocket<uWS::SERVER> ws, char *data,
@@ -124,19 +138,59 @@ int main() {
         string event = j[0].get<string>();
         if (event == "telemetry") {
           // j[1] is the data JSON object
+          bike_model.set_inertia(j[1]["inertia"]);
+
           vector<double> ptsx = j[1]["ptsx"];
           vector<double> ptsy = j[1]["ptsy"];
           double px = j[1]["x"];
           double py = j[1]["y"];
           double psi = j[1]["psi"];
           double v = j[1]["speed"];
+          double vx = j[1]["velocity_x"];
+          double vy = j[1]["velocity_y"];
+          double dpsi = j[1]["yaw_rate"];
 
-          /*
-           * TODO: Calculate steering angle and throttle using MPC.
-           *
-           * Both are in between [-1, 1];
-           *
-           */
+          double yslip0 = j[1]["sideslip_0"];
+          double yslip1 = j[1]["sideslip_1"];
+          double yslip2 = j[1]["sideslip_2"];
+          double yslip3 = j[1]["sideslip_3"];
+          
+          double yfric0 = j[1]["side_friction_0"];
+          double yfric1 = j[1]["side_friction_1"];
+          double yfric2 = j[1]["side_friction_2"];
+          double yfric3 = j[1]["side_friction_3"];
+
+//           std::cout << "side friction max: " << j[1]["side_friction_max"] << std::endl;
+//           std::cout << "side slip max: " << j[1]["side_slip_max"] << std::endl;
+//           std::cout << "side stiffness: " << j[1]["side_stiffness"] << std::endl;
+//           std::cout << "forward friction max: " << j[1]["forward_friction_max"] << std::endl;
+//           std::cout << "forward slip max: " << j[1]["forward_slip_max"] << std::endl;
+//           std::cout << "forward stiffness: " << j[1]["forward_stiffness"] << std::endl;
+          
+
+          // test calculate slip angles and friction
+          double s_cf = -atan((vy + 2.67 * dpsi)/vx);
+          if (isnan(s_cf)) { s_cf = 0; }
+          s_cf += (double) j[1]["steering_angle"];
+
+          double s_cr = -atan((vy - 2.67 * dpsi)/vx);
+          if (isnan(s_cr)) { s_cr = 0; }
+
+          std::cout << (vy + 2.67 * dpsi)/vx << std::endl;
+          std::cout << (vy - 2.67 * dpsi)/vx << std::endl;
+          std::cout << s_cf << std::endl;
+          std::cout << s_cr << std::endl;
+          printf("slips: %.3f, %.3f, %.3f, %.3f\n",
+              yslip0, yslip1, yslip2, yslip3);
+          printf("frictions: %.3f, %.3f, %.3f, %.3f\n",
+              yfric0, yfric1, yfric2, yfric3);
+          printf("friction/slip: %.3f, %.3f, %.3f, %.3f\n",
+              yfric0/yslip0, yfric1/yslip1, yfric2/yslip2, yfric3/yslip3);
+          printf("front angle: %.3f, rear angle: %.3f\n", s_cf, s_cr);
+          printf("slip/angle: %.3f, %.3f, %.3f, %.3f\n",
+              yslip0/s_cf, yslip1/s_cf, yslip2/s_cr, yslip3/s_cr);
+          printf("friction/angle: %.3f, %.3f, %.3f, %.3f\n\n",
+              yfric0/s_cf, yfric1/s_cf, yfric2/s_cr, yfric3/s_cr);
 
           vector<double> waypoints_x;
           vector<double> waypoints_y;
@@ -157,18 +211,27 @@ int main() {
           Eigen::Map<Eigen::VectorXd> waypoints_y_eig(ptry, 6);
 
           auto coeffs = polyfit(waypoints_x_eig, waypoints_y_eig, 3);
-          double cte = polyeval(coeffs, 0); // px = 0, py = 0
-          double epsi = -atan(coeffs[1]);   // p
+//           double cte = polyeval(coeffs, 0); // px = 0, py = 0
+//           double epsi = -atan(coeffs[1]);   // p
 
           double steer_value = j[1]["steering_angle"];
           double throttle_value = j[1]["throttle"];
 
           bike_model.set_coeffs(coeffs);
           Eigen::VectorXd state(6);
-          state << 0, 0, 0, v, cte, epsi;
+          // XXX: switch depending on model state/input
+          // for a kinematic bike model, states x, y, psi, v, cte, epsi
+//           state << 0, 0, 0, v, cte, epsi;
+          // for a dynamic bike model, states x, y, psi, vx, vy, dpsi
+          state << 0, 0, 0, vx, vy, dpsi;
+          std::cout << "state: " << state << std::endl;
+
           auto vars = mpc.Solve(state, coeffs);
           steer_value = vars[0];
           throttle_value = vars[1];
+
+          std::cout << "steer, throttle: " << steer_value << ", " << throttle_value << std::endl;
+//           return;
 
           json msgJson;
           // NOTE: Remember to divide by deg2rad(25) before you send the

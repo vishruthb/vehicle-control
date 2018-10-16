@@ -99,14 +99,14 @@ void MPC::SetupOptions(std::string &options) {
   // options for IPOPT solver
 
   // Uncomment this if you'd like more print information
-  options += "Integer print_level  0\n";
+  options += "Integer print_level  2\n";
   // NOTE: Setting sparse to true allows the solver to take advantage
   // of sparse routines, this makes the computation MUCH FASTER. If you
   // can uncomment 1 of these and see if it makes a difference or not but
   // if you uncomment both the computation time should go up in orders of
   // magnitude.
   options += "Sparse  true        forward\n";
-  options += "Sparse  true        reverse\n";
+//   options += "Sparse  true        reverse\n";
   // NOTE: Currently the solver has a maximum time limit of 0.5 seconds.
   // Change this as you see fit.
   options += "Numeric max_cpu_time          0.5\n";

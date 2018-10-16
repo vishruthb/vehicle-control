@@ -47,13 +47,16 @@ private:
   /// compute jacobian d/dx f(x,u) evaluated at linearization point (x0,u0)
   MatrixXd ComputeA(const vector<double> &x0, const vector<double> &u0) {
     double x = x0[X];
-    double y = x0[Y];
+//     double y = x0[Y];
     double psi = x0[PSI];
     double v = x0[V];
-    double cte = x0[CTE];
+//     double cte = x0[CTE];
     double epsi = x0[EPSI];
-    double a = u0[A];
+//     double a = u0[A];
     double delta = u0[DELTA];
+
+    double df = coeffs_[1] + 2*coeffs_[2]*x + 3*coeffs_[3]*x*x;
+    double d2f = 2*coeffs_[2] + 6*coeffs_[3]*x;
 
     Eigen::Matrix<double, 6, 6> A;
 
@@ -62,31 +65,22 @@ private:
         0, 1, (v * cos(psi) * dt_), (sin(psi) * dt_), 0, 0,    //
         0, 0, 1, (-1 / Lf_ * delta * dt_), 0, 0,               //
         0, 0, 0, 1, 0, 0,                                      //
-        0, -1, 0, (sin(epsi) * dt_), 0, (v * cos(epsi) * dt_), //
-        0, 0, 1, (-1 / Lf_ * delta * dt_), 0, 0;
+        df, -1, 0, (sin(epsi) * dt_), 0, (v * cos(epsi) * dt_), //
+        -d2f/(df*df+1), 0, 1, (-1 / Lf_ * delta * dt_), 0, 0;
 
     return A;
   }
 
   /// compute jacobian d/du f(x,u) evaluated at linearization point (x0,u0)
   MatrixXd ComputeB(const vector<double> &x0, const vector<double> &u0) {
-    double x = x0[X];
-    double y = x0[Y];
-    double psi = x0[PSI];
-    double v = x0[V];
-    double cte = x0[CTE];
-    double epsi = x0[EPSI];
-    double a = u0[A];
-    double delta = u0[DELTA];
-
     MatrixXd B(6, 2);
     // compute jacobian wrt to u and evaluate at x0, u0
     B << 0, 0,             //
         0, 0,              //
-        -v / Lf_ * dt_, 0, //
+        -x0[V] / Lf_ * dt_, 0, //
         0, dt_,            //
         0, 0,              //
-        -v / Lf_ * dt_, 0;
+        -x0[V] / Lf_ * dt_, 0;
 
     return B;
   }
@@ -108,11 +102,6 @@ private:
     MatrixXd mB = ComputeB(x0, u0);
 
     AD<double> x = xt[X];
-    AD<double> f = coeffs_[0] + coeffs_[1] * x + coeffs_[2] * CppAD::pow(x, 2) +
-                   coeffs_[3] * CppAD::pow(x, 3);
-
-    AD<double> psides = CppAD::atan(coeffs_[1] + 2 * coeffs_[2] * x +
-                                    3 * coeffs_[3] * CppAD::pow(x, 2));
 
     auto Dot = [](const VectorXd &a, const ADVec &x) {
       AD<double> ax = 0;
@@ -126,10 +115,16 @@ private:
     double y = x0[Y];
     double psi = x0[PSI];
     double v = x0[V];
-    double cte = x0[CTE];
+//     double cte = x0[CTE];
     double epsi = x0[EPSI];
     double a = u0[A];
     double delta = u0[DELTA];
+
+    double f = coeffs_[0] + coeffs_[1] * xx + coeffs_[2] * CppAD::pow(xx, 2) +
+                   coeffs_[3] * CppAD::pow(xx, 3);
+
+    double psides = CppAD::atan(coeffs_[1] + 2 * coeffs_[2] * xx +
+                                    3 * coeffs_[3] * CppAD::pow(xx, 2));
 
     // first add term contributed from linearization point
     fxtut[X] = xx + v * cos(psi) * dt_;
