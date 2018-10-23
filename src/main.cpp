@@ -5,12 +5,16 @@
 #include "SeqLinBikeModel.h"
 #include "json.hpp"
 #include <chrono>
+#include <ctime>
 #include <iostream>
+#include <iterator>
+#include <fstream>
 #include <math.h>
 #include <string>
 #include <thread>
 #include <uWS/uWS.h>
 #include <vector>
+
 using namespace std;
 
 /*! \mainpage
@@ -87,7 +91,7 @@ Eigen::VectorXd polyfit(Eigen::VectorXd xvals, Eigen::VectorXd yvals,
   return result;
 }
 
-int main() {
+int main(int argc, char* argv[]) {
   uWS::Hub h;
 
   Bounds bounds;
@@ -107,18 +111,46 @@ int main() {
   size_t nu = 2;
   int delay = 1;   // measured in dt,
   double dt = 0.1; // delay * dt * 1000 ms delay imposed below
-  int vref = 70;
+  int vref = 80;
+  double Lf = 1.; // initial guess
 
-  SeqLinBikeModel bike_model(N, nx, nu, delay, dt, vref);
+  if (argc > 1) { 
+    Lf = std::atof(argv[1]);
+  }
+  if (argc > 2) {
+    dt = std::atof(argv[2]);
+  }
+
+  BikeModel bike_model(N, nx, nu, delay, dt, vref, Lf);
+  printf("lf %.2f\n", bike_model.get_param_lf());
   Model &model = bike_model;
 
   // MPC solver implementing sequential linearization
   MPC mpc(N, model, N * nx + (N - 1) * nu, N * nx, bounds);
 
+  // write data points to csv
+  time_t now;
+  struct tm *timeinfo;
+  char buffer[80];
+  std::time(&now);
+  timeinfo = std::localtime(&now);
+  std::strftime(buffer, sizeof(buffer), "%Y-%m-%d-%H.%M", timeinfo);
+  std::string timestamp(buffer);
+  std::sprintf(buffer, "_lf_%.1f_dt_%.2f", Lf, dt);
+  std::string paramstr(buffer);
+  std::string fname = "../logs/" + timestamp + paramstr;
+  std::cout << fname << std::endl;
+
+  // bookkeeping for recording data
+  std::ofstream ofile(fname);
+  ofile << "t,x,y,psi,v,cte,epsi,a,delta" << std::endl;
+
+  auto start = chrono::system_clock::now();
+
   // talk to the Unit3d simulator
-  h.onMessage([&mpc, &bike_model, dt, delay](uWS::WebSocket<uWS::SERVER> ws,
-                                             char *data, size_t length,
-                                             uWS::OpCode opCode) {
+  h.onMessage([&mpc, &bike_model, &ofile, start, dt, delay]
+               (uWS::WebSocket<uWS::SERVER> ws, char *data,
+                size_t length, uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
     // The 2 signifies a websocket event
@@ -137,13 +169,8 @@ int main() {
           double py = j[1]["y"];
           double psi = j[1]["psi"];
           double v = j[1]["speed"];
-
-          /*
-           * TODO: Calculate steering angle and throttle using MPC.
-           *
-           * Both are in between [-1, 1];
-           *
-           */
+          auto duration = chrono::system_clock::now() - start;
+          auto ms = chrono::duration_cast<chrono::milliseconds>(duration).count();
 
           vector<double> waypoints_x;
           vector<double> waypoints_y;
@@ -174,13 +201,20 @@ int main() {
           Eigen::VectorXd state(6);
           state << 0, 0, 0, v, cte, epsi;
           auto vars = mpc.Solve(state, coeffs);
+
+          // NOTE: Remember to divide by deg2rad(25) before you send the
+          // steering value back. Otherwise the values will be in between
+          // [-deg2rad(25), deg2rad(25)] instead of [-1, 1].
           steer_value = vars[0];
           throttle_value = vars[1];
 
+          // record state and action values
+          ofile << ms << ", " << px << "," << py << "," << psi << ",";
+          ofile << v << "," << cte << "," << epsi << ",";
+          ofile << throttle_value << "," << steer_value << std::endl;
+
+          // send info to server
           json msgJson;
-          // NOTE: Remember to divide by deg2rad(25) before you send the
-          // steering value back. Otherwise the values will be in between
-          // [-deg2rad(25), deg2rad(25] instead of [-1, 1].
           msgJson["steering_angle"] = steer_value / (deg2rad(25));
           msgJson["throttle"] = throttle_value;
 
@@ -220,19 +254,15 @@ int main() {
           msgJson["next_y"] = next_y_vals;
 
           auto msg = "42[\"steer\"," + msgJson.dump() + "]";
-          // std::cout << msg << std::endl;
 
           // Latency
           // The purpose is to mimic real driving conditions where
           // the car does actuate the commands instantly.
-          //
           // Feel free to play around with this value but should be to drive
           // around the track with 100ms latency.
-          //
-          // NOTE: REMEMBER TO SET THIS TO 100 MILLISECONDS BEFORE
-          // SUBMITTING.
           this_thread::sleep_for(chrono::milliseconds(int(delay * dt * 1000)));
           ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
+
         }
       } else {
         // Manual driving
@@ -256,11 +286,11 @@ int main() {
     }
   });
 
-  h.onConnection([&h](uWS::WebSocket<uWS::SERVER> ws, uWS::HttpRequest req) {
+  h.onConnection([](uWS::WebSocket<uWS::SERVER> ws, uWS::HttpRequest req) {
     std::cout << "Connected!!!" << std::endl;
   });
 
-  h.onDisconnection([&h](uWS::WebSocket<uWS::SERVER> ws, int code,
+  h.onDisconnection([](uWS::WebSocket<uWS::SERVER> ws, int code,
                          char *message, size_t length) {
     ws.close();
     std::cout << "Disconnected" << std::endl;

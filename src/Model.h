@@ -133,6 +133,7 @@ public:
   virtual ~Model() {}
 };
 
+
 /*! \brief Implementation of simple bike model used for direct NLP.  The cost
  * function parameters were taken from someone's solution online just to debug
  * things, will tune them more substantially later*/
@@ -140,6 +141,7 @@ class BikeModel : public Model {
 protected:
   double dt_;       ///>sampling time dt
   double vref_;     ///>reference velocity
+  double Lf_; ///> turning radius, distance from car center to front
   VectorXd coeffs_; ///>coefficients
   /*!\enum BikeModel::State positions of different state components in state,
    * i.e. if state(t) =
@@ -149,8 +151,6 @@ protected:
   ///\enum positions of different input components in input u(t), i.e. ut(t) =
   ///[delta(t); a(t)].  Also specifies starts (offset by nx_)
   enum Input { DELTA, A };
-
-  const double Lf_ = 2.67; ///>model parameter roughly specifying turning radius
 
   virtual AD<double> Cost(int t, const ADVec &xt, const ADVec &ut,
                           const ADVec &utp1) override {
@@ -163,9 +163,9 @@ protected:
     cost += 5 * CppAD::pow(ut[DELTA], 2);
     cost += 5 * CppAD::pow(ut[A], 2);
 
-    cost += 250 * CppAD::pow(ut[DELTA] * xt[V], 2);
+    cost += 200 * CppAD::pow(ut[DELTA] * xt[V], 2);
 
-    cost += 200 * CppAD::pow(utp1[DELTA] - ut[DELTA], 2);
+    cost += 100 * CppAD::pow(utp1[DELTA] - ut[DELTA], 2);
     cost += 10 * CppAD::pow(utp1[A] - ut[A], 2);
 
     return cost;
@@ -209,14 +209,25 @@ protected:
   }
 
 public:
-  BikeModel(int N, int nx, int nu, int delay, double dt, double vref,
+  BikeModel(int N, int nx, int nu, int delay, double dt, double vref, double Lf,
             const VectorXd &coeffs = {}, const vector<double> &trajectory = {})
-      : Model(N, nx, nu, delay, trajectory), dt_(dt), vref_(vref),
+      : Model(N, nx, nu, delay, trajectory), dt_(dt), vref_(vref), Lf_(Lf),
+        coeffs_(coeffs) {}
+
+  BikeModel(int N, int nx, int nu, int delay, double dt, double vref, 
+            const VectorXd &coeffs = {}, const vector<double> &trajectory = {})
+      : Model(N, nx, nu, delay, trajectory), dt_(dt), vref_(vref), Lf_(2.67),
         coeffs_(coeffs) {}
 
   /// call this before every mpc solve to update reference trajectory, which is
   /// specified in terms of polynomial = sum_{i=0}^2 coeffs[i] * pow(x,i)
   void set_coeffs(const VectorXd &coeffs) { coeffs_ = coeffs; }
+
+  void set_param_lf(double Lf) { Lf_ = Lf; }
+  double get_param_lf() { return Lf_; }
+
+  void set_param_vref(double vref) { vref_ = vref; }
+  double get_param_vref() { return vref_; }
 
   virtual int xstart() override { return starts_[X]; }
   virtual int ystart() override { return starts_[Y]; }
