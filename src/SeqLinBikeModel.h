@@ -51,9 +51,6 @@ private:
 //     double a = u0[A];
     double delta = u0[DELTA];
 
-    double df = coeffs_[1] + 2*coeffs_[2]*x + 3*coeffs_[3]*x*x;
-    double d2f = 2*coeffs_[2] + 6*coeffs_[3]*x;
-
     Eigen::Matrix<double, 6, 6> A;
 
     double df = coeffs_[1] + coeffs_[2] * x + coeffs_[3] * x * x;

@@ -9,15 +9,16 @@ class DynBikeModel : public Model {
 protected:
   double dt_;
   double vref_;
-  double inertia_;
+  double Iz_;
   VectorXd coeffs_;
 
   enum State { X, Y, PSI, VX, VY, DPSI };
   enum Input { DELTA, A };
 
-  const double Lf_ = 2.67;
-  const double Ca_ = 2e4;
-  const double M_ = 1000 + 80; // body + 4 wheels
+  const double Lf_ = 1.6;
+  const double Lr_ = 1.27;
+  const double M_ = 1.080; // body + 4 wheels
+  const double Ca_ = 0.8 * 9.81;
 
   virtual AD<double> Cost(int t, const ADVec &xt, const ADVec &ut,
                           const ADVec &utp1) override {
@@ -76,69 +77,67 @@ protected:
     ADVec fxtut(nx());
 
     // slip angles of front and rear wheels
-    AD<double> s_cf = -atan((vy + Lf_ * dpsi) / vx);
-    if (isnan(s_cf)) { s_cf = 0; }
-    s_cf += delta;
-    AD<double> s_cr = -atan((vy - Lf_ * dpsi) / vx);
-    if (isnan(s_cr)) { s_cr = 0; }
+    AD<double> alpha_f = -atan2(vy + Lf_ * dpsi, vx);
+    if (isnan(alpha_f)) { alpha_f = 0; }
+    alpha_f += delta;
+
+    AD<double> alpha_r= -atan2(vy - Lf_ * dpsi, vx);
+    if (isnan(alpha_r)) { alpha_r = 0; }
 
     // cornering (lateral) forces for front and rear wheels
-    AD<double> F_cr = Ca_ * s_cr;
-    AD<double> F_cf = Ca_ * s_cf;
+    AD<double> F_yf = -2 * Ca_ * alpha_f;
+    AD<double> F_yr = -2 * Ca_ * alpha_r;
 
-    AD<double> dvx = a + dpsi * vy;
-    AD<double> dvy = (F_cf + F_cr) * CppAD::cos(delta) * 2 / M_ - vx * dpsi;
-    AD<double> ddpsi = 2 * Lf_ * (F_cf - F_cr) / inertia_;
+    AD<double> dvx = a - F_yf * CppAD::sin(delta) / M_ + vy * dpsi;
+    AD<double> dvy = (F_yf * CppAD::cos(delta) + F_yr) / M_ - vx * dpsi;
+    AD<double> ddpsi = (Lf_ * F_yf * CppAD::cos(delta) - Lr_ * F_yr) / Iz_;
+    AD<double> dx = vx * CppAD::cos(psi) - vy * CppAD::sin(psi);
+    AD<double> dy = vx * CppAD::sin(psi) + vy * CppAD::cos(psi);
 
-    fxtut[X] = x + vx * dt_;
-    fxtut[Y] = y + vy * dt_;
+    fxtut[X] = x + dx * dt_;
+    fxtut[Y] = y + dy * dt_;
     fxtut[PSI] = psi + dpsi * dt_;
     fxtut[VX] = vx + dvx * dt_;
     fxtut[VY] = vy + dvy * dt_;
     fxtut[DPSI] = dpsi + ddpsi * dt_;
 
     // compute the simple kinematic bike model predictions
-//     AD<double> v, dx0, dy0, dpsi0, dvx0, dvy0, ddpsi0;
-//     v = CppAD::sqrt(CppAD::pow(vx, 2) + CppAD::pow(vy, 2));
-//     dx0 = v * CppAD::cos(psi);
-//     dy0 = v * CppAD::sin(psi);
-//     dpsi0 = -v / Lf_ * delta;
-//     dvx0 = a * CppAD::cos(psi) - v * CppAD::sin(psi) * dpsi0;
-//     dvy0 = a * CppAD::sin(psi) + v * CppAD::cos(psi) * dpsi0;
-//     ddpsi0 = -a / Lf_ * delta;
-// 
-//     fxtut[X] = x + dx0 * dt_;
-//     fxtut[Y] = y + dy0 * dt_;
-//     fxtut[PSI] = psi + dpsi0 * dt_;
-//     fxtut[VX] = vx + dvx0 * dt_;
-//     fxtut[VY] = vy + dvy0 * dt_;
-//     fxtut[DPSI] = dpsi + ddpsi0 * dt_;
+    AD<double> v, dx0, dy0, dpsi0, dvx0, dvy0, ddpsi0;
+    v = CppAD::sqrt(CppAD::pow(vx, 2) + CppAD::pow(vy, 2));
+    dx0 = v * CppAD::cos(psi);
+    dy0 = v * CppAD::sin(psi);
+    dpsi0 = -v / Lf_ * delta;
+    dvx0 = a * CppAD::cos(psi) - v * CppAD::sin(psi) * dpsi0;
+    dvy0 = a * CppAD::sin(psi) + v * CppAD::cos(psi) * dpsi0;
+    ddpsi0 = -a / Lf_ * delta;
 
-//     std::cout << "fxtut: " << fxtut << std::endl;
-//     std::cout << "\nv: " << v << ", a: " << a << ", delta: " << delta << std::endl;
-//     std::cout << "x: " << x << ", vx: " << vx << ", dx0: " << dx0 << std::endl;
-//     std::cout << "y: " << y << ", vy: " << vy << ", dy0: " << dy0 << std::endl;
-//     std::cout << "psi: " << psi << ", dpsi: " << dpsi << ", dpsi0: " << dpsi0 << std::endl;
-//     std::cout << "dvx: " << dvx << ", dvx0: " << dvx0 << std::endl;
-//     std::cout << "dvy: " << dvy << ", dvy0: " << dvy0 << std::endl;
-//     std::cout << "dpsi: " << dpsi << ", dpsi0: " << dpsi0 << std::endl;
-//     std::cout << "\ns_cf: " << s_cf << "\ts_cr: " << s_cr << std::endl;
-//     std::cout << "F_cf: " << F_cf << "\tF_cr: " << F_cr << std::endl;
+    std::cout << "fxtut: " << fxtut << std::endl;
+
+    std::cout << "\nv: " << v << ", a: " << a << ", delta: " << delta << std::endl;
+    std::cout << "x: " << x << ", dx: " << dx << ", dx0: " << dx0 << std::endl;
+    std::cout << "y: " << y << ", dy: " << dy << ", dy0: " << dy0 << std::endl;
+    std::cout << "dpsi: " << dpsi << ", dpsi0: " << dpsi0 << std::endl;
+    std::cout << "vx: " << vx << ", dvx: " << dvx << ", dvx0: " << dvx0 << std::endl;
+    std::cout << "vy: " << vy << ", dvy: " << dvy << ", dvy0: " << dvy0 << std::endl;
+    std::cout << "ddpsi: " << ddpsi << ", ddpsi0: " << ddpsi0 << std::endl;
+
+    std::cout << "\nalpha_f: " << alpha_f<< "\talpha_r: " << alpha_r<< std::endl;
+    std::cout << "F_yf: " << F_yf << "\tF_yr: " << F_yr << std::endl;
 
     return fxtut;
   }
 
 public:
   DynBikeModel(int N, int nx, int nu, int delay,
-              double dt, double vref, double inertia = 0,
+              double dt, double vref, double inertia = 0.05,
               const VectorXd &coeffs = {},
               const vector<double> &trajectory = {})
       : Model(N, nx, nu, delay, trajectory),
-        dt_(dt), vref_(vref), inertia_(inertia), coeffs_(coeffs) {}
+        dt_(dt), vref_(vref), Iz_(inertia), coeffs_(coeffs) {}
 
   void set_coeffs(const VectorXd &coeffs) { coeffs_ = coeffs; }
-  void set_inertia(double inertia) { if (inertia_ == 0) { inertia_ = inertia; } }
-  double inertia() { return inertia_; }
+  void set_inertia(double inertia) { Iz_ = inertia; }
+  double inertia() { return Iz_; }
 
   virtual int xstart() override { return starts_[X]; }
   virtual int ystart() override {return starts_[Y]; }

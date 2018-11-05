@@ -6,6 +6,7 @@
 #include "SeqLinBikeModel.h"
 #include "json.hpp"
 #include <chrono>
+#include <fstream>
 #include <iostream>
 #include <math.h>
 #include <string>
@@ -109,18 +110,34 @@ int main() {
   double dt = 0.1; // delay * dt * 1000 ms delay imposed below
   int vref = 70;
 
-  SeqLinBikeModel bike_model(N, nx, nu, delay, dt, vref);
+//   SeqLinBikeModel bike_model(N, nx, nu, delay, dt, vref);
   // Dynamic nonlinear bike model
-//   DynBikeModel bike_model(N, nx, nu, delay, dt, vref);
+  DynBikeModel bike_model(N, nx, nu, delay, dt, vref);
 
   Model &model = bike_model;
   // MPC solver implementing sequential linearization
   MPC mpc(N, model, N * nx + (N - 1) * nu, N * nx, bounds);
 
+  // logging
+  time_t now;
+  struct tm *timeinfo;
+  char buffer[80];
+  std::time(&now);
+  timeinfo = std::localtime(&now);
+  std::strftime(buffer, sizeof(buffer), "%m-%d-%H.%M", timeinfo);
+  std::string timestamp(buffer);
+  std::string fname = "../logs/slips_frics_" + timestamp;
+
+  // bookkeeping for recording data
+  std::ofstream ofile(fname);
+  ofile << "t,v,vx,vy,a,psi,dpsi,delta" << std::endl;
+
+  auto start = chrono::system_clock::now();
+
   // talk to the Unit3d simulator
-  h.onMessage([&mpc, &bike_model, dt, delay](uWS::WebSocket<uWS::SERVER> ws,
-                                             char *data, size_t length,
-                                             uWS::OpCode opCode) {
+  h.onMessage([&mpc, &bike_model, &ofile, start, dt, delay]
+              (uWS::WebSocket<uWS::SERVER> ws, char *data,
+               size_t length, uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
     // The 2 signifies a websocket event
@@ -133,7 +150,12 @@ int main() {
         string event = j[0].get<string>();
         if (event == "telemetry") {
           // j[1] is the data JSON object
-          bike_model.set_inertia(j[1]["inertia"]);
+//           double inertia = j[1]["inertia"];
+//           bike_model.set_inertia(inertia * 1e-4);
+
+          // record time
+          auto duration = chrono::system_clock::now() - start;
+          auto ms = chrono::duration_cast<chrono::milliseconds>(duration).count();
 
           vector<double> ptsx = j[1]["ptsx"];
           vector<double> ptsy = j[1]["ptsy"];
@@ -145,54 +167,21 @@ int main() {
           double vy = j[1]["velocity_y"];
           double dpsi = j[1]["yaw_rate"];
 
-          double yslip0 = j[1]["sideslip_0"];
-          double yslip1 = j[1]["sideslip_1"];
-          double yslip2 = j[1]["sideslip_2"];
-          double yslip3 = j[1]["sideslip_3"];
-          
-          double yfric0 = j[1]["side_friction_0"];
-          double yfric1 = j[1]["side_friction_1"];
-          double yfric2 = j[1]["side_friction_2"];
-          double yfric3 = j[1]["side_friction_3"];
-
-//           std::cout << "side friction max: " << j[1]["side_friction_max"] << std::endl;
-//           std::cout << "side slip max: " << j[1]["side_slip_max"] << std::endl;
-//           std::cout << "side stiffness: " << j[1]["side_stiffness"] << std::endl;
-//           std::cout << "forward friction max: " << j[1]["forward_friction_max"] << std::endl;
-//           std::cout << "forward slip max: " << j[1]["forward_slip_max"] << std::endl;
-//           std::cout << "forward stiffness: " << j[1]["forward_stiffness"] << std::endl;
-          
-
-          // test calculate slip angles and friction
-          double s_cf = -atan((vy + 2.67 * dpsi)/vx);
-          if (isnan(s_cf)) { s_cf = 0; }
-          s_cf += (double) j[1]["steering_angle"];
-
-          double s_cr = -atan((vy - 2.67 * dpsi)/vx);
-          if (isnan(s_cr)) { s_cr = 0; }
-
-          std::cout << (vy + 2.67 * dpsi)/vx << std::endl;
-          std::cout << (vy - 2.67 * dpsi)/vx << std::endl;
-          std::cout << s_cf << std::endl;
-          std::cout << s_cr << std::endl;
-          printf("slips: %.3f, %.3f, %.3f, %.3f\n",
-              yslip0, yslip1, yslip2, yslip3);
-          printf("frictions: %.3f, %.3f, %.3f, %.3f\n",
-              yfric0, yfric1, yfric2, yfric3);
-          printf("friction/slip: %.3f, %.3f, %.3f, %.3f\n",
-              yfric0/yslip0, yfric1/yslip1, yfric2/yslip2, yfric3/yslip3);
-          printf("front angle: %.3f, rear angle: %.3f\n", s_cf, s_cr);
-          printf("slip/angle: %.3f, %.3f, %.3f, %.3f\n",
-              yslip0/s_cf, yslip1/s_cf, yslip2/s_cr, yslip3/s_cr);
-          printf("friction/angle: %.3f, %.3f, %.3f, %.3f\n\n",
-              yfric0/s_cf, yfric1/s_cf, yfric2/s_cr, yfric3/s_cr);
+//           double yslip0 = j[1]["sideslip_0"];
+//           double yslip1 = j[1]["sideslip_1"];
+//           double yslip2 = j[1]["sideslip_2"];
+//           double yslip3 = j[1]["sideslip_3"];
+//           
+//           double yfric0 = j[1]["side_friction_0"];
+//           double yfric1 = j[1]["side_friction_1"];
+//           double yfric2 = j[1]["side_friction_2"];
+//           double yfric3 = j[1]["side_friction_3"];
 
           vector<double> waypoints_x;
           vector<double> waypoints_y;
 
           // transform waypoints to be from car's perspective
-          // this means we can consider px = 0, py = 0, and psi = 0
-          // greatly simplifying future calculations
+          // so we can consider px = 0, py = 0, and psi = 0
           for (int i = 0; i < ptsx.size(); i++) {
             double dx = ptsx[i] - px;
             double dy = ptsy[i] - py;
@@ -206,8 +195,6 @@ int main() {
           Eigen::Map<Eigen::VectorXd> waypoints_y_eig(ptry, 6);
 
           auto coeffs = polyfit(waypoints_x_eig, waypoints_y_eig, 3);
-//           double cte = polyeval(coeffs, 0); // px = 0, py = 0
-//           double epsi = -atan(coeffs[1]);   // p
 
           double steer_value = j[1]["steering_angle"];
           double throttle_value = j[1]["throttle"];
@@ -216,17 +203,25 @@ int main() {
           Eigen::VectorXd state(6);
           // XXX: switch depending on model state/input
           // for a kinematic bike model, states x, y, psi, v, cte, epsi
+//           double cte = polyeval(coeffs, 0); // px = 0, py = 0
+//           double epsi = -atan(coeffs[1]);   // p
 //           state << 0, 0, 0, v, cte, epsi;
           // for a dynamic bike model, states x, y, psi, vx, vy, dpsi
           state << 0, 0, 0, vx, vy, dpsi;
-          std::cout << "state: " << state << std::endl;
+//           std::cout << "state: " << state << std::endl;
 
           auto vars = mpc.Solve(state, coeffs);
           steer_value = vars[0];
           throttle_value = vars[1];
 
-          std::cout << "steer, throttle: " << steer_value << ", " << throttle_value << std::endl;
-//           return;
+          std::cout << "\nthrottle: " << throttle_value << std::endl;
+          std::cout << "steer: " << steer_value / deg2rad(25) << std::endl;
+
+          ofile << ms << "," << v << "," << vx << "," << vy << ",";
+          ofile << throttle_value << "," << psi << "," << dpsi << "," << steer_value << ",";
+//           ofile << yslip0 << "," << yslip1 << "," << yslip2 << "," << yslip3 << ",";
+//           ofile << yfric0 << "," << yfric1 << "," << yfric2 << "," << yfric3 << ",";
+          ofile << std::endl;
 
           json msgJson;
           // NOTE: Remember to divide by deg2rad(25) before you send the
@@ -307,11 +302,11 @@ int main() {
     }
   });
 
-  h.onConnection([&h](uWS::WebSocket<uWS::SERVER> ws, uWS::HttpRequest req) {
+  h.onConnection([](uWS::WebSocket<uWS::SERVER> ws, uWS::HttpRequest req) {
     std::cout << "Connected!!!" << std::endl;
   });
 
-  h.onDisconnection([&h](uWS::WebSocket<uWS::SERVER> ws, int code,
+  h.onDisconnection([](uWS::WebSocket<uWS::SERVER> ws, int code,
                          char *message, size_t length) {
     ws.close();
     std::cout << "Disconnected" << std::endl;
