@@ -43,12 +43,12 @@ private:
   /// compute jacobian d/dx f(x,u) evaluated at linearization point (x0,u0)
   MatrixXd ComputeA(const vector<double> &x0, const vector<double> &u0) {
     double x = x0[X];
-    double y = x0[Y];
+//     double y = x0[Y];
     double psi = x0[PSI];
     double v = x0[V];
-    double cte = x0[CTE];
+//     double cte = x0[CTE];
     double epsi = x0[EPSI];
-    double a = u0[A];
+//     double a = u0[A];
     double delta = u0[DELTA];
 
     Eigen::Matrix<double, 6, 6> A;
@@ -70,23 +70,14 @@ private:
 
   /// compute jacobian d/du f(x,u) evaluated at linearization point (x0,u0)
   MatrixXd ComputeB(const vector<double> &x0, const vector<double> &u0) {
-    double x = x0[X];
-    double y = x0[Y];
-    double psi = x0[PSI];
-    double v = x0[V];
-    double cte = x0[CTE];
-    double epsi = x0[EPSI];
-    double a = u0[A];
-    double delta = u0[DELTA];
-
     MatrixXd B(6, 2);
     // compute jacobian wrt to u and evaluate at x0, u0
     B << 0, 0,             //
         0, 0,              //
-        -v / Lf_ * dt_, 0, //
+        -x0[V] / Lf_ * dt_, 0, //
         0, dt_,            //
         0, 0,              //
-        -v / Lf_ * dt_, 0;
+        -x0[V] / Lf_ * dt_, 0;
 
     return B;
   }
@@ -109,7 +100,7 @@ private:
     double y = x0[Y];
     double psi = x0[PSI];
     double v = x0[V];
-    double cte = x0[CTE];
+//     double cte = x0[CTE];
     double epsi = x0[EPSI];
     double a = u0[A];
     double delta = u0[DELTA];

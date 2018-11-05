@@ -2,6 +2,7 @@
 #include "Eigen-3.3/Eigen/QR"
 #include "MPC.h"
 #include "Model.h"
+#include "DynBikeModel.h"
 #include "SeqLinBikeModel.h"
 #include "json.hpp"
 #include <chrono>
@@ -105,7 +106,6 @@ int main(int argc, char* argv[]) {
   bounds.u_low_ = vector<double>{-1 * deg2rad(25), -1};
 
   // MPC is initialized here!
-  // Sequential linearized bicycle model
   size_t N = 10;
   size_t nx = 6;
   size_t nu = 2;
@@ -121,20 +121,24 @@ int main(int argc, char* argv[]) {
     dt = std::atof(argv[2]);
   }
 
-  BikeModel bike_model(N, nx, nu, delay, dt, vref, Lf);
-  printf("lf %.2f\n", bike_model.get_param_lf());
-  Model &model = bike_model;
+  // XXX: choose bike model here, jankily with comments
+//   BikeModel bike_model(N, nx, nu, delay, dt, vref, Lf);
+//   SeqLinBikeModel bike_model(N, nx, nu, delay, dt, vref);
+  DynBikeModel bike_model(N, nx, nu, delay, dt, vref);
 
+  printf("lf %.2f\n", bike_model.get_param_lf());
+
+  Model &model = bike_model;
   // MPC solver implementing sequential linearization
   MPC mpc(N, model, N * nx + (N - 1) * nu, N * nx, bounds);
 
-  // write data points to csv
+  // logging
   time_t now;
   struct tm *timeinfo;
   char buffer[80];
   std::time(&now);
   timeinfo = std::localtime(&now);
-  std::strftime(buffer, sizeof(buffer), "%Y-%m-%d-%H.%M", timeinfo);
+  std::strftime(buffer, sizeof(buffer), "%m-%d-%H.%M", timeinfo);
   std::string timestamp(buffer);
   std::sprintf(buffer, "_lf_%.1f_dt_%.2f", Lf, dt);
   std::string paramstr(buffer);
@@ -149,8 +153,8 @@ int main(int argc, char* argv[]) {
 
   // talk to the Unit3d simulator
   h.onMessage([&mpc, &bike_model, &ofile, start, dt, delay]
-               (uWS::WebSocket<uWS::SERVER> ws, char *data,
-                size_t length, uWS::OpCode opCode) {
+              (uWS::WebSocket<uWS::SERVER> ws, char *data,
+               size_t length, uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
     // The 2 signifies a websocket event
@@ -163,12 +167,20 @@ int main(int argc, char* argv[]) {
         string event = j[0].get<string>();
         if (event == "telemetry") {
           // j[1] is the data JSON object
+//           double inertia = j[1]["inertia"];
+//           bike_model.set_inertia(inertia * 1e-4);
+
+          // record time
+          auto duration = chrono::system_clock::now() - start;
+          auto ms = chrono::duration_cast<chrono::milliseconds>(duration).count();
+
           vector<double> ptsx = j[1]["ptsx"];
           vector<double> ptsy = j[1]["ptsy"];
           double px = j[1]["x"];
           double py = j[1]["y"];
           double psi = j[1]["psi"];
           double v = j[1]["speed"];
+
           auto duration = chrono::system_clock::now() - start;
           auto ms = chrono::duration_cast<chrono::milliseconds>(duration).count();
 
@@ -176,8 +188,7 @@ int main(int argc, char* argv[]) {
           vector<double> waypoints_y;
 
           // transform waypoints to be from car's perspective
-          // this means we can consider px = 0, py = 0, and psi = 0
-          // greatly simplifying future calculations
+          // so we can consider px = 0, py = 0, and psi = 0
           for (int i = 0; i < ptsx.size(); i++) {
             double dx = ptsx[i] - px;
             double dy = ptsy[i] - py;
@@ -191,15 +202,21 @@ int main(int argc, char* argv[]) {
           Eigen::Map<Eigen::VectorXd> waypoints_y_eig(ptry, 6);
 
           auto coeffs = polyfit(waypoints_x_eig, waypoints_y_eig, 3);
-          double cte = polyeval(coeffs, 0); // px = 0, py = 0
-          double epsi = -atan(coeffs[1]);   // p
 
           double steer_value = j[1]["steering_angle"];
           double throttle_value = j[1]["throttle"];
 
           bike_model.set_coeffs(coeffs);
           Eigen::VectorXd state(6);
-          state << 0, 0, 0, v, cte, epsi;
+          // XXX: switch depending on model state/input
+          // for a kinematic bike model, states x, y, psi, v, cte, epsi
+//           double cte = polyeval(coeffs, 0); // px = 0, py = 0
+//           double epsi = -atan(coeffs[1]);   // p
+//           state << 0, 0, 0, v, cte, epsi;
+          // for a dynamic bike model, states x, y, psi, vx, vy, dpsi
+          state << 0, 0, 0, vx, vy, dpsi;
+//           std::cout << "state: " << state << std::endl;
+
           auto vars = mpc.Solve(state, coeffs);
 
           // NOTE: Remember to divide by deg2rad(25) before you send the
