@@ -1,6 +1,6 @@
 build/
 simulators/
-logs
+logs/
 
 *~
 *.swp
